@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Clínico — Registros de Pacientes</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap');
+  :root{--bg:#0f1117;--surface:#1a1d27;--card:#20243a;--border:#2a2f45;--text:#e8eaf0;--muted:#7a82a0;--danger:#e05252;--warning:#f0b429;--safe:#3ecf8e;--blue:#4f8ef7;--display:'Nunito',sans-serif;--body:'Nunito Sans',sans-serif;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.65;min-height:100vh;}
+
+  /* LOGIN */
+  #loginScreen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+  .login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:360px;width:100%;text-align:center;}
+  .login-box .icon{font-size:2.5rem;margin-bottom:.8rem;}
+  .login-box h1{font-family:var(--display);font-size:1.3rem;font-weight:800;margin-bottom:.4rem;}
+  .login-box p{color:var(--muted);font-size:.88rem;margin-bottom:1.2rem;}
+  .login-box input{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:.95rem;margin-bottom:.8rem;font-family:var(--body);}
+  .login-box input:focus{outline:none;border-color:var(--blue);}
+  .login-box button{width:100%;padding:.8rem;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.95rem;cursor:pointer;}
+
+  /* HEADER */
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;}
+  header h1{font-family:var(--display);font-size:1.1rem;font-weight:800;}
+  .hbadge{font-size:.72rem;background:rgba(79,142,247,.15);color:var(--blue);padding:.2rem .7rem;border-radius:20px;font-family:var(--display);font-weight:700;}
+  .logout-btn{margin-left:auto;padding:.4rem .9rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer;font-family:var(--display);font-weight:600;}
+
+  main{padding:1.2rem;max-width:900px;margin:0 auto;}
+
+  /* FILTERS */
+  .filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+  .filters select,.filters input{padding:.45rem .8rem;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:.85rem;font-family:var(--body);}
+  .filters select:focus,.filters input:focus{outline:none;border-color:var(--blue);}
+  .refresh-btn{padding:.45rem 1rem;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.82rem;cursor:pointer;margin-left:auto;}
+
+  /* STATS ROW */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin-bottom:1rem;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem;text-align:center;}
+  .stat-num{font-family:var(--display);font-size:1.6rem;font-weight:800;}
+  .stat-label{font-size:.72rem;color:var(--muted);margin-top:.1rem;}
+
+  /* TABLE */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;}
+  th{text-align:left;padding:.65rem 1rem;background:var(--surface);border-bottom:2px solid var(--border);font-family:var(--display);font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;white-space:nowrap;}
+  td{padding:.65rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;font-size:.88rem;}
+  tr:hover td{background:rgba(255,255,255,.02);}
+  tr:last-child td{border-bottom:none;}
+
+  .zone-badge{display:inline-block;padding:.15rem .55rem;border-radius:20px;font-family:var(--display);font-weight:700;font-size:.72rem;}
+  .zone-green{background:rgba(62,207,142,.15);color:var(--safe);}
+  .zone-yellow{background:rgba(240,180,41,.15);color:var(--warning);}
+  .zone-red{background:rgba(224,82,82,.15);color:var(--danger);}
+
+  .urge-bar{display:inline-flex;align-items:center;gap:.4rem;}
+  .urge-mini{height:6px;width:60px;background:var(--border);border-radius:3px;overflow:hidden;}
+  .urge-mini-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--safe),var(--warning),var(--danger));}
+
+  .notes-cell{max-width:220px;color:var(--muted);font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .empty{text-align:center;padding:3rem;color:var(--muted);font-size:.9rem;}
+
+  .loading{text-align:center;padding:2rem;color:var(--muted);}
+
+  /* PATIENT FILTER PILLS */
+  .patient-pills{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;}
+  .pill{padding:.25rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer;font-family:var(--display);font-weight:600;transition:all .2s;}
+  .pill.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="icon">🔐</div>
+    <h1>Panel Clínico</h1>
+    <p>Acceso exclusivo para el terapeuta. Ingresa la contraseña configurada.</p>
+    <input type="password" id="passInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">Ingresar</button>
+    <p style="margin-top:.8rem;font-size:.75rem;color:var(--muted)" id="loginErr"></p>
+  </div>
+</div>
+
+<header>
+  <span style="font-size:1.5rem">📊</span>
+  <div>
+    <h1>Panel Clínico</h1>
+  </div>
+  <span class="hbadge">Registros de Pacientes</span>
+  <button class="logout-btn" onclick="logout()">Salir</button>
+</header>
+
+<main>
+  <div class="stats" id="statsRow">
+    <div class="stat-card"><div class="stat-num" id="sTotal">—</div><div class="stat-label">Entradas totales</div></div>
+    <div class="stat-card"><div class="stat-num" id="sPacientes">—</div><div class="stat-label">Pacientes</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--safe)" id="sHoy">—</div><div class="stat-label">Entradas hoy</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--danger)" id="sRojo">—</div><div class="stat-label">Zona roja hoy</div></div>
+  </div>
+
+  <div class="filters">
+    <select id="filterZone" onchange="applyFilter()">
+      <option value="">Todas las zonas</option>
+      <option value="Verde">🟢 Verde</option>
+      <option value="Amarillo">🟡 Amarillo</option>
+      <option value="Rojo">🔴 Rojo</option>
+    </select>
+    <input type="date" id="filterDate" onchange="applyFilter()">
+    <button class="refresh-btn" onclick="loadData()">↻ Actualizar</button>
+  </div>
+
+  <div class="patient-pills" id="patientPills"></div>
+
+  <div class="table-wrap">
+    <div id="tableArea" class="loading">Cargando registros…</div>
+  </div>
+</main>
+
+<script>
+// ── CONFIG — MISMO QUE index.html ──
+const SUPABASE_URL = 'PEGA_TU_URL_AQUI';
+const SUPABASE_KEY = 'PEGA_TU_ANON_KEY_AQUI';
+// Contraseña del panel clínico — cámbiala
+const PANEL_PASSWORD = 'richard2024';
+
+let db = null;
+let allData = [];
+let activePatient = 'all';
+
+// ── LOGIN ──
+function login() {
+  const pass = document.getElementById('passInput').value;
+  if (pass === PANEL_PASSWORD) {
+    sessionStorage.setItem('clinicAuth', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    init();
+  } else {
+    document.getElementById('loginErr').textContent = 'Contraseña incorrecta.';
+  }
+}
+function logout() {
+  sessionStorage.removeItem('clinicAuth');
+  location.reload();
+}
+
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('clinicAuth') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    init();
+  }
+});
+
+function init() {
+  try { db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+  loadData();
+}
+
+async function loadData() {
+  document.getElementById('tableArea').innerHTML = '<div class="loading">Cargando…</div>';
+  if (!db || SUPABASE_URL === 'PEGA_TU_URL_AQUI') {
+    document.getElementById('tableArea').innerHTML = '<div class="empty">⚠️ Configura las credenciales de Supabase en el archivo.</div>';
+    return;
+  }
+  try {
+    const { data, error } = await db
+      .from('registros')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) throw error;
+    allData = data || [];
+    renderStats();
+    renderPatientPills();
+    applyFilter();
+  } catch(e) {
+    document.getElementById('tableArea').innerHTML = `<div class="empty">Error al cargar: ${e.message}</div>`;
+  }
+}
+
+function renderStats() {
+  const today = new Date().toISOString().split('T')[0];
+  const hoy = allData.filter(r => r.created_at && r.created_at.startsWith(today));
+  const rojoHoy = hoy.filter(r => r.zone && r.zone.includes('Rojo'));
+  const pacientes = [...new Set(allData.map(r => r.patient_name).filter(Boolean))];
+  document.getElementById('sTotal').textContent = allData.length;
+  document.getElementById('sPacientes').textContent = pacientes.length;
+  document.getElementById('sHoy').textContent = hoy.length;
+  document.getElementById('sRojo').textContent = rojoHoy.length;
+}
+
+function renderPatientPills() {
+  const pacientes = [...new Set(allData.map(r => r.patient_name).filter(Boolean))].sort();
+  const pills = document.getElementById('patientPills');
+  pills.innerHTML = `<button class="pill ${activePatient==='all'?'active':''}" onclick="filterPatient('all',this)">Todos</button>` +
+    pacientes.map(p => `<button class="pill ${activePatient===p?'active':''}" onclick="filterPatient('${p}',this)">${p}</button>`).join('');
+}
+
+function filterPatient(name, btn) {
+  activePatient = name;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+}
+
+function applyFilter() {
+  const zone = document.getElementById('filterZone').value;
+  const date = document.getElementById('filterDate').value;
+  let filtered = allData;
+  if (activePatient !== 'all') filtered = filtered.filter(r => r.patient_name === activePatient);
+  if (zone) filtered = filtered.filter(r => r.zone && r.zone.includes(zone));
+  if (date) filtered = filtered.filter(r => r.created_at && r.created_at.startsWith(date));
+  renderTable(filtered);
+}
+
+function zoneClass(zone) {
+  if (!zone) return '';
+  if (zone.includes('Verde')) return 'zone-green';
+  if (zone.includes('Amarillo')) return 'zone-yellow';
+  if (zone.includes('Rojo')) return 'zone-red';
+  return '';
+}
+
+function renderTable(data) {
+  if (!data.length) {
+    document.getElementById('tableArea').innerHTML = '<div class="empty">No hay registros para este filtro.</div>';
+    return;
+  }
+  document.getElementById('tableArea').innerHTML = `
+  <table>
+    <thead><tr>
+      <th>Fecha / Hora</th>
+      <th>Paciente</th>
+      <th>Zona</th>
+      <th>Deseo</th>
+      <th>HALT</th>
+      <th>Notas</th>
+    </tr></thead>
+    <tbody>
+      ${data.map(r => {
+        const d = new Date(r.created_at);
+        const fecha = isNaN(d) ? '—' : d.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+        const urgePct = r.urge != null ? (r.urge * 10) : 0;
+        const urgeColor = r.urge >= 7 ? '#e05252' : r.urge >= 4 ? '#f0b429' : '#3ecf8e';
+        return `<tr>
+          <td style="white-space:nowrap;color:var(--muted);font-size:.82rem">${fecha}</td>
+          <td><strong>${r.patient_name || '—'}</strong></td>
+          <td>${r.zone ? `<span class="zone-badge ${zoneClass(r.zone)}">${r.zone.split(' — ')[0]}</span>` : '—'}</td>
+          <td>${r.urge != null ? `<div class="urge-bar"><span style="font-family:'Nunito',sans-serif;font-weight:700;color:${urgeColor}">${r.urge}</span><div class="urge-mini"><div class="urge-mini-fill" style="width:${urgePct}%"></div></div></div>` : '—'}</td>
+          <td style="font-size:.82rem;color:var(--muted)">${r.halt || '—'}</td>
+          <td class="notes-cell" title="${(r.notes||'').replace(/"/g,"'")}">${r.notes || '—'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+}
+</script>
+</body>
+</html>
