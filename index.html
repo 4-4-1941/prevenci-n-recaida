@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#1e1a16">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Mi Plan de Prevención</title>
+<title>Recurso de Prevención de Recaída</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;1,400&display=swap');
@@ -174,7 +174,8 @@
 <!-- SETUP SCREEN -->
 <div id="setupScreen">
   <div class="logo">🛡️</div>
-  <h1>Mi Plan de Prevención</h1>
+  <h1>Recurso de Prevención de Recaída</h1>
+  <p style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem">Creado por <strong>Richard Castillejo Ponce</strong></p>
   <p>Antes de comenzar, escribe tu nombre para que tu terapeuta pueda ver tus registros.</p>
   <input type="text" id="nameInput" placeholder="Tu nombre" maxlength="60" autocomplete="off">
   <button onclick="setupPatient()">Comenzar</button>
@@ -206,8 +207,8 @@
 <header>
   <div class="header-icon">🛡️</div>
   <div>
-    <div class="header-sub">Recurso de prevención</div>
-    <h1>Mi Plan</h1>
+    <div class="header-sub">R. Castillejo Ponce</div>
+    <h1>Prevención de Recaída</h1>
   </div>
   <div class="patient-name" id="headerName"></div>
 </header>
@@ -360,11 +361,21 @@
     <span class="badge badge-danger">Si consumo</span>
     <h3>🔄 ¿Qué hago si consumo?</h3>
     <ol class="technique-steps" style="margin-top:.3rem">
-      <li><strong>No te castigues.</strong> Un tropiezo no borra lo que lograste.</li>
-      <li><strong>Detén el consumo</strong> lo antes posible.</li>
-      <li><strong>Llama a tu terapeuta</strong> en las próximas 24 horas.</li>
-      <li><strong>Analiza qué pasó:</strong> ¿qué señal ignoraste?</li>
-      <li><strong>Regresa al tratamiento.</strong> No esperes "estar listo".</li>
+      <li>
+        <strong>Evita la culpa paralizante.</strong> No caigas en la desesperanza o la vergüenza extrema. Lo que sientes es válido — pero la culpa no te ayuda a avanzar.
+      </li>
+      <li>
+        <strong>Valora el esfuerzo.</strong> Reconoce el camino que ya has recorrido y los logros obtenidos. Tu autoestima es importante y merece ser protegida.
+      </li>
+      <li>
+        <strong>Normaliza el proceso.</strong> La recuperación no suele ser lineal. Un tropiezo es parte de los obstáculos del camino — no el fin del proceso.
+      </li>
+      <li>
+        <strong>Valida tus emociones y retoma el plan.</strong> Siente lo que sientes, nómbralo, y da el siguiente paso: llama a tu terapeuta en las próximas 24 horas.
+      </li>
+      <li>
+        <strong>Detén el consumo</strong> lo antes posible y regresa al tratamiento. No esperes "estar listo".
+      </li>
     </ol>
     <div class="alert-box alert-warning" style="margin-top:.7rem;font-weight:700;text-align:center">
       Consumir una vez no es fracasar. Rendirse es la única recaída definitiva.
@@ -379,10 +390,33 @@
     <h2>Mi Red de Apoyo</h2>
     <p>Llama antes de que el deseo sea insoportable.</p>
   </div>
-  <div class="contact-card"><div class="contact-icon">👨‍⚕️</div><div><div class="contact-name">Mi Terapeuta</div><div class="contact-role">Primera llamada en crisis o post-lapse</div></div><button class="contact-action">Llamar</button></div>
-  <div class="contact-card"><div class="contact-icon">🤝</div><div><div class="contact-name">Padrino / Compañero de Grupo</div><div class="contact-role">Apoyo entre pares</div></div><button class="contact-action">Llamar</button></div>
-  <div class="contact-card"><div class="contact-icon">👨‍👩‍👦</div><div><div class="contact-name">Familiar de Confianza</div><div class="contact-role">Presencia y acompañamiento</div></div><button class="contact-action">Llamar</button></div>
-  <div class="contact-card" style="border-color:#f1948a;background:var(--danger-bg)"><div class="contact-icon">🆘</div><div><div class="contact-name">Línea de Crisis — MINSA</div><div class="contact-role">113 opción 5 · Salud Mental</div></div><button class="contact-action" style="background:var(--danger)" onclick="window.location.href='tel:113'">113</button></div>
+  <!-- Terapeuta fijo -->
+  <div class="contact-card">
+    <div class="contact-icon">👨‍⚕️</div>
+    <div>
+      <div class="contact-name">Lic. Richard Castillejo Ponce</div>
+      <div class="contact-role">Tu terapeuta · Primera llamada en crisis</div>
+    </div>
+    <button class="contact-action" onclick="window.location.href='tel:+51995410502'">Llamar</button>
+  </div>
+
+  <!-- Contactos personales editables -->
+  <div class="card" style="margin-bottom:.7rem">
+    <span class="badge badge-blue">Mis contactos de apoyo</span>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">Agrega el nombre y número de tus personas de apoyo.</p>
+    <div id="contactList"></div>
+    <button onclick="addContact()" style="width:100%;padding:.6rem;border:2px dashed var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:var(--display);font-weight:700;font-size:.85rem;cursor:pointer;margin-top:.5rem">+ Agregar contacto</button>
+  </div>
+
+  <!-- MINSA -->
+  <div class="contact-card" style="border-color:#f1948a;background:var(--danger-bg)">
+    <div class="contact-icon">🆘</div>
+    <div>
+      <div class="contact-name">Línea de Crisis — MINSA</div>
+      <div class="contact-role">113 opción 5 · Salud Mental</div>
+    </div>
+    <button class="contact-action" style="background:var(--danger)" onclick="window.location.href='tel:113'">113</button>
+  </div>
 </section>
 
 <!-- ── REGISTRO ── -->
@@ -451,6 +485,7 @@ window.addEventListener('load', () => {
     document.getElementById('setupScreen').style.display = 'none';
     document.getElementById('headerName').textContent = patientName;
     renderLog();
+    renderContacts();
   }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
@@ -537,6 +572,46 @@ function runCycle() {
     }, 4000);
   }, 4000);
 }
+
+// ── CONTACTS ──
+  let contacts = JSON.parse(localStorage.getItem('myContacts') || '[]');
+
+  function renderContacts() {
+    const list = document.getElementById('contactList');
+    if (!list) return;
+    if (!contacts.length) {
+      list.innerHTML = '<p style="font-size:.82rem;color:var(--muted);text-align:center;padding:.5rem 0">Aún no has agregado contactos.</p>';
+      return;
+    }
+    list.innerHTML = contacts.map((c, i) => `
+      <div class="contact-card" style="margin-bottom:.5rem">
+        <div class="contact-icon">${c.icon || '👤'}</div>
+        <div><div class="contact-name">${c.name}</div><div class="contact-role">${c.role || 'Apoyo personal'}</div></div>
+        <div style="display:flex;flex-direction:column;gap:.3rem;margin-left:auto;flex-shrink:0">
+          <button class="contact-action" onclick="window.location.href='tel:${c.phone}'" ${!c.phone?'disabled':''}>Llamar</button>
+          <button onclick="deleteContact(${i})" style="padding:.25rem .6rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.7rem;cursor:pointer">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function addContact() {
+    const icons = ['🤝','👨‍👩‍👦','👥','🫂','💙'];
+    const name = prompt('Nombre del contacto:');
+    if (!name) return;
+    const phone = prompt('Número (con código de país, ej: 51987654321):');
+    const role = prompt('¿Qué rol tiene? (ej: Familiar, Padrino, Amigo)') || 'Apoyo personal';
+    contacts.push({ name, phone: phone||'', role, icon: icons[contacts.length % icons.length] });
+    localStorage.setItem('myContacts', JSON.stringify(contacts));
+    renderContacts();
+  }
+
+  function deleteContact(i) {
+    if (!confirm('¿Eliminar este contacto?')) return;
+    contacts.splice(i, 1);
+    localStorage.setItem('myContacts', JSON.stringify(contacts));
+    renderContacts();
+  }
 
 // ── REGISTRO + SUPABASE ──
 let entries = JSON.parse(localStorage.getItem('entries_v2') || '[]');
