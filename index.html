@@ -167,6 +167,15 @@
   .alert-box{padding:.8rem 1rem;border-radius:8px;font-size:.85rem;margin-top:.7rem;}
   .alert-warning{background:var(--warning-bg);border-left:4px solid var(--warning);color:var(--warning);}
   .alert-safe{background:var(--safe-bg);border-left:4px solid var(--safe);color:var(--safe);}
+
+  /* ── EMA ── */
+  .ema-opt{border:2px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:.85rem;cursor:pointer;text-align:center;transition:all .2s;background:var(--card);font-family:var(--display);font-weight:600;}
+  .ema-opt:hover{border-color:var(--blue);}
+  .ema-opt.selected{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .ema-entry{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;margin-bottom:.5rem;font-size:.82rem;}
+  .ema-entry .ema-date{color:var(--muted);font-size:.73rem;font-family:var(--display);font-weight:700;margin-bottom:.3rem;}
+  .ema-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem;}
+  .ema-chip{padding:.15rem .55rem;border-radius:20px;font-size:.72rem;font-family:var(--display);font-weight:700;background:var(--blue-bg);color:var(--blue);}
 </style>
 </head>
 <body>
@@ -419,12 +428,97 @@
   </div>
 </section>
 
+<!-- ── EMA ── -->
+<section id="ema" class="panel">
+  <div class="section-head">
+    <div class="section-icon">📡</div>
+    <h2>Evaluación Momentánea</h2>
+    <p>Registra cómo te sientes <strong>ahora mismo</strong>. Cuanto más frecuente, más útil para tu terapeuta.</p>
+  </div>
+
+  <!-- EMA FORM -->
+  <div class="card" id="emaForm">
+    <span class="badge badge-blue">EMA — Registro en tiempo real</span>
+
+    <!-- 1. Craving -->
+    <div style="margin-bottom:1.2rem">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">1. ¿Cuánto deseo de consumir sientes ahora? <span style="color:var(--muted);font-weight:400">(0–10)</span></p>
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <span style="font-family:var(--display);font-size:2rem;font-weight:800;color:var(--blue);min-width:2rem;text-align:center" id="emaUrgeNum">0</span>
+        <input type="range" id="emaUrge" min="0" max="10" value="0" style="flex:1;accent-color:var(--blue)" oninput="document.getElementById('emaUrgeNum').textContent=this.value;updateUrgeColor(this.value)">
+        <span style="font-size:.78rem;color:var(--muted)">Intenso</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:.2rem"><span>Nada</span><span id="urgeColorLabel">Sin deseo</span></div>
+    </div>
+
+    <!-- 2. Emoción -->
+    <div style="margin-bottom:1.2rem">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">2. ¿Cómo te sientes emocionalmente ahora?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <div class="ema-opt" id="emo-tranquilo" onclick="selectEmo('tranquilo')">😌 Tranquilo/a</div>
+        <div class="ema-opt" id="emo-ansioso" onclick="selectEmo('ansioso')">😰 Ansioso/a</div>
+        <div class="ema-opt" id="emo-triste" onclick="selectEmo('triste')">😔 Triste</div>
+        <div class="ema-opt" id="emo-enojado" onclick="selectEmo('enojado')">😠 Enojado/a</div>
+        <div class="ema-opt" id="emo-solo" onclick="selectEmo('solo')">😶 Solo/a</div>
+        <div class="ema-opt" id="emo-bien" onclick="selectEmo('bien')">😊 Bien</div>
+        <div class="ema-opt" id="emo-cansado" onclick="selectEmo('cansado')">😴 Cansado/a</div>
+        <div class="ema-opt" id="emo-otro" onclick="selectEmo('otro')">💭 Otro</div>
+      </div>
+    </div>
+
+    <!-- 3. Situación -->
+    <div style="margin-bottom:1.2rem">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">3. ¿Dónde estás y con quién?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <div class="ema-opt" id="sit-solo" onclick="selectSit('solo')">🏠 Solo/a en casa</div>
+        <div class="ema-opt" id="sit-familia" onclick="selectSit('familia')">👨‍👩‍👦 Con familia</div>
+        <div class="ema-opt" id="sit-amigos" onclick="selectSit('amigos')">👥 Con amigos</div>
+        <div class="ema-opt" id="sit-trabajo" onclick="selectSit('trabajo')">💼 En trabajo</div>
+        <div class="ema-opt" id="sit-riesgo" onclick="selectSit('riesgo')">⚠️ Lugar de riesgo</div>
+        <div class="ema-opt" id="sit-otro" onclick="selectSit('otro')">📍 Otro lugar</div>
+      </div>
+    </div>
+
+    <!-- 4. Pensamiento de consumo -->
+    <div style="margin-bottom:1.2rem">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">4. ¿Estás teniendo pensamientos de consumir?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
+        <div class="ema-opt" id="pens-no" onclick="selectPens('no')">✅ No</div>
+        <div class="ema-opt" id="pens-leve" onclick="selectPens('leve')">💭 Leve</div>
+        <div class="ema-opt" id="pens-intenso" onclick="selectPens('intenso')">🔥 Intenso</div>
+      </div>
+    </div>
+
+    <!-- 5. Estrategia -->
+    <div style="margin-bottom:1rem">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">5. Si hubo craving, ¿qué hiciste? <span style="color:var(--muted);font-weight:400">(opcional)</span></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <div class="ema-opt" id="est-ninguno" onclick="selectEst('ninguno')">— No hubo</div>
+        <div class="ema-opt" id="est-respiro" onclick="selectEst('respiro')">🫁 Respiré</div>
+        <div class="ema-opt" id="est-llame" onclick="selectEst('llame')">📞 Llamé a alguien</div>
+        <div class="ema-opt" id="est-sali" onclick="selectEst('sali')">🚶 Salí del lugar</div>
+        <div class="ema-opt" id="est-distrae" onclick="selectEst('distrae')">🎯 Me distraje</div>
+        <div class="ema-opt" id="est-otro" onclick="selectEst('otro')">💡 Otra cosa</div>
+      </div>
+    </div>
+
+    <button class="save-btn" id="emaSaveBtn" onclick="saveEMA()">Enviar evaluación a mi terapeuta</button>
+    <div id="emaSyncMsg" class="sync-msg" style="display:none"></div>
+  </div>
+
+  <!-- EMA HISTORY -->
+  <div style="margin-top:1rem">
+    <p style="font-family:var(--display);font-weight:700;font-size:.88rem;color:var(--muted);margin-bottom:.5rem">Mis últimas evaluaciones</p>
+    <div id="emaList"></div>
+  </div>
+</section>
+
 <!-- ── REGISTRO ── -->
 <section id="registro" class="panel">
   <div class="section-head">
     <div class="section-icon">📓</div>
-    <h2>Mi Registro</h2>
-    <p>Cada entrada llega a tu terapeuta.</p>
+    <h2>Mi Registro Diario</h2>
+    <p>Resumen del día. Cada entrada llega a tu terapeuta.</p>
   </div>
   <div class="card">
     <span class="badge badge-blue">Nueva entrada</span>
@@ -462,8 +556,9 @@
   <button class="nav-btn" onclick="showPanel('halt',this)"><span class="nav-icon">⚠️</span>HALT</button>
   <button class="nav-btn" onclick="showPanel('tecnicas',this)"><span class="nav-icon">🧘</span>Técnicas</button>
   <button class="nav-btn" onclick="showPanel('plan',this)"><span class="nav-icon">📋</span>Plan</button>
-  <button class="nav-btn" onclick="showPanel('red',this)"><span class="nav-icon">📞</span>Mi Red</button>
-  <button class="nav-btn" onclick="showPanel('registro',this)"><span class="nav-icon">📓</span>Registro</button>
+  <button class="nav-btn" onclick="showPanel('red',this)"><span class="nav-icon">📞</span>Red</button>
+  <button class="nav-btn" onclick="showPanel('ema',this)"><span class="nav-icon">📡</span>EMA</button>
+  <button class="nav-btn" onclick="showPanel('registro',this)"><span class="nav-icon">📓</span>Diario</button>
 </nav>
 
 <script>
@@ -486,6 +581,7 @@ window.addEventListener('load', () => {
     document.getElementById('headerName').textContent = patientName;
     renderLog();
     renderContacts();
+    renderEMA();
   }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
@@ -611,6 +707,92 @@ function runCycle() {
     contacts.splice(i, 1);
     localStorage.setItem('myContacts', JSON.stringify(contacts));
     renderContacts();
+  }
+
+// ── EMA ──
+  let emaEmo = '', emaSit = '', emaPens = '', emaEst = '';
+  let emaEntries = JSON.parse(localStorage.getItem('emaEntries') || '[]');
+
+  function selectEmo(v) { emaEmo = v; document.querySelectorAll('[id^="emo-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('emo-'+v)?.classList.add('selected'); }
+  function selectSit(v) { emaSit = v; document.querySelectorAll('[id^="sit-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('sit-'+v)?.classList.add('selected'); }
+  function selectPens(v) { emaPens = v; document.querySelectorAll('[id^="pens-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('pens-'+v)?.classList.add('selected'); }
+  function selectEst(v) { emaEst = v; document.querySelectorAll('[id^="est-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('est-'+v)?.classList.add('selected'); }
+
+  function updateUrgeColor(v) {
+    const labels = ['Sin deseo','Muy leve','Leve','Moderado','Moderado','Medio','Medio-alto','Alto','Muy alto','Crítico','Emergencia'];
+    document.getElementById('urgeColorLabel').textContent = labels[v] || '';
+    const num = document.getElementById('emaUrgeNum');
+    num.style.color = v >= 7 ? 'var(--danger)' : v >= 4 ? 'var(--warning)' : 'var(--safe)';
+  }
+
+  async function saveEMA() {
+    const urge = parseInt(document.getElementById('emaUrge').value);
+    if (!emaEmo || !emaSit || !emaPens) { alert('Completa al menos emoción, situación y pensamiento.'); return; }
+    const btn = document.getElementById('emaSaveBtn');
+    btn.disabled = true; btn.textContent = 'Guardando…';
+
+    const entry = {
+      type: 'ema',
+      patient_name: patientName,
+      urge,
+      emotion: emaEmo,
+      situation: emaSit,
+      craving_thought: emaPens,
+      strategy: emaEst || null,
+      created_at: new Date().toISOString()
+    };
+
+    emaEntries.unshift(entry);
+    localStorage.setItem('emaEntries', JSON.stringify(emaEntries.slice(0,100)));
+    renderEMA();
+
+    const msg = document.getElementById('emaSyncMsg');
+    msg.style.display = 'block';
+    if (db && SUPABASE_URL !== 'PEGA_TU_URL_AQUI') {
+      try {
+        const { error } = await db.from('ema').insert([entry]);
+        if (error) throw error;
+        msg.className = 'sync-msg sync-ok';
+        msg.textContent = '✓ Evaluación enviada a tu terapeuta.';
+      } catch(e) {
+        msg.className = 'sync-msg sync-err';
+        msg.textContent = '⚠ Sin conexión — guardado en tu celular.';
+      }
+    } else {
+      msg.className = 'sync-msg sync-err';
+      msg.textContent = '⚠ App no configurada aún. Guardado localmente.';
+    }
+
+    // Reset
+    btn.disabled = false; btn.textContent = 'Enviar evaluación a mi terapeuta';
+    document.getElementById('emaUrge').value = 0;
+    document.getElementById('emaUrgeNum').textContent = '0';
+    emaEmo=''; emaSit=''; emaPens=''; emaEst='';
+    document.querySelectorAll('.ema-opt').forEach(e=>e.classList.remove('selected'));
+    setTimeout(()=>{ msg.style.display='none'; }, 4000);
+  }
+
+  function renderEMA() {
+    const list = document.getElementById('emaList');
+    if (!list) return;
+    if (!emaEntries.length) { list.innerHTML='<p style="color:var(--muted);font-size:.85rem;text-align:center">Aún no hay evaluaciones.</p>'; return; }
+    const emoLabels = {tranquilo:'😌 Tranquilo/a',ansioso:'😰 Ansioso/a',triste:'😔 Triste',enojado:'😠 Enojado/a',solo:'😶 Solo/a',bien:'😊 Bien',cansado:'😴 Cansado/a',otro:'💭 Otro'};
+    const pensLabels = {no:'✅ Sin pensamientos',leve:'💭 Leve',intenso:'🔥 Intenso'};
+    list.innerHTML = emaEntries.slice(0,10).map(e => {
+      const d = new Date(e.created_at);
+      const fecha = isNaN(d)?'':d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const urgeColor = e.urge>=7?'var(--danger)':e.urge>=4?'var(--warning)':'var(--safe)';
+      return `<div class="ema-entry">
+        <div class="ema-date">${fecha}</div>
+        <div style="font-weight:700;color:${urgeColor}">Craving: ${e.urge}/10</div>
+        <div class="ema-chips">
+          ${e.emotion?`<span class="ema-chip">${emoLabels[e.emotion]||e.emotion}</span>`:''}
+          ${e.situation?`<span class="ema-chip">📍 ${e.situation}</span>`:''}
+          ${e.craving_thought?`<span class="ema-chip">${pensLabels[e.craving_thought]||e.craving_thought}</span>`:''}
+          ${e.strategy&&e.strategy!=='ninguno'?`<span class="ema-chip">💡 ${e.strategy}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
   }
 
 // ── REGISTRO + SUPABASE ──
