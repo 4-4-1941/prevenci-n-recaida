@@ -172,10 +172,19 @@
   .ema-opt{border:2px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:.85rem;cursor:pointer;text-align:center;transition:all .2s;background:var(--card);font-family:var(--display);font-weight:600;}
   .ema-opt:hover{border-color:var(--blue);}
   .ema-opt.selected{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .ema-opt.selected-danger{background:var(--danger);border-color:var(--danger);color:#fff;}
   .ema-entry{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;margin-bottom:.5rem;font-size:.82rem;}
   .ema-entry .ema-date{color:var(--muted);font-size:.73rem;font-family:var(--display);font-weight:700;margin-bottom:.3rem;}
   .ema-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem;}
   .ema-chip{padding:.15rem .55rem;border-radius:20px;font-size:.72rem;font-family:var(--display);font-weight:700;background:var(--blue-bg);color:var(--blue);}
+  .ema-chip.danger{background:var(--danger-bg);color:var(--danger);}
+
+  /* EMI */
+  .emi-header{font-family:var(--display);font-size:1.1rem;font-weight:800;margin-bottom:.8rem;}
+  .emi-step{border-left:4px solid var(--safe);background:var(--safe-bg);border-radius:0 10px 10px 0;padding:.8rem 1rem;margin-bottom:.6rem;font-size:.88rem;}
+  .emi-step.danger{border-color:var(--danger);background:var(--danger-bg);}
+  .emi-step.warning{border-color:var(--warning);background:var(--warning-bg);}
+  .emi-call-btn{display:block;width:100%;padding:.85rem;background:var(--danger);color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:800;font-size:1rem;cursor:pointer;margin-top:.8rem;}
 </style>
 </head>
 <body>
@@ -428,70 +437,92 @@
   </div>
 </section>
 
+<!-- ── EMI MODAL (activación automática) ── -->
+<div class="overlay" id="emiOverlay" onclick="closeEMIOutside(event)">
+  <div class="modal" id="emiModal">
+    <button class="modal-close" onclick="closeEMI()">✕</button>
+    <div id="emiContent"></div>
+  </div>
+</div>
+
 <!-- ── EMA ── -->
 <section id="ema" class="panel">
   <div class="section-head">
     <div class="section-icon">📡</div>
     <h2>Evaluación Momentánea</h2>
-    <p>Registra cómo te sientes <strong>ahora mismo</strong>. Cuanto más frecuente, más útil para tu terapeuta.</p>
+    <p>Registra cómo te sientes <strong>ahora mismo</strong>. Si el deseo es alto, recibirás apoyo inmediato.</p>
   </div>
 
-  <!-- EMA FORM -->
   <div class="card" id="emaForm">
-    <span class="badge badge-blue">EMA — Registro en tiempo real</span>
+    <span class="badge badge-blue">EMA · Registro en tiempo real</span>
 
-    <!-- 1. Craving -->
-    <div style="margin-bottom:1.2rem">
-      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">1. ¿Cuánto deseo de consumir sientes ahora? <span style="color:var(--muted);font-weight:400">(0–10)</span></p>
+    <!-- SCQ-NOW: Ítem 1 — Craving intensidad -->
+    <div style="margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.4rem">1. Tengo un deseo de consumir ahora mismo</p>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.6rem">Mueve el control para indicar la intensidad</p>
       <div style="display:flex;align-items:center;gap:.8rem">
-        <span style="font-family:var(--display);font-size:2rem;font-weight:800;color:var(--blue);min-width:2rem;text-align:center" id="emaUrgeNum">0</span>
-        <input type="range" id="emaUrge" min="0" max="10" value="0" style="flex:1;accent-color:var(--blue)" oninput="document.getElementById('emaUrgeNum').textContent=this.value;updateUrgeColor(this.value)">
-        <span style="font-size:.78rem;color:var(--muted)">Intenso</span>
+        <span style="font-size:.75rem;color:var(--muted)">Nada</span>
+        <input type="range" id="emaUrge" min="0" max="10" value="0" style="flex:1;accent-color:var(--blue)" oninput="onUrgeChange(this.value)">
+        <span style="font-size:.75rem;color:var(--muted)">Mucho</span>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:.2rem"><span>Nada</span><span id="urgeColorLabel">Sin deseo</span></div>
+      <div style="text-align:center;margin-top:.4rem">
+        <span style="font-family:var(--display);font-size:2rem;font-weight:800;color:var(--safe)" id="emaUrgeNum">0</span>
+        <span style="font-size:.78rem;color:var(--muted)">/10 — </span>
+        <span style="font-size:.78rem;font-family:var(--display);font-weight:700" id="urgeLabel">Sin deseo</span>
+      </div>
     </div>
 
-    <!-- 2. Emoción -->
-    <div style="margin-bottom:1.2rem">
-      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">2. ¿Cómo te sientes emocionalmente ahora?</p>
+    <!-- SCQ-NOW: Ítem 2 — Intención -->
+    <div style="margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">2. Si pudiera consumir ahora mismo, lo haría</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
+        <div class="ema-opt" id="int-no" onclick="selectInt('no')">❌ No</div>
+        <div class="ema-opt" id="int-quizas" onclick="selectInt('quizas')">🤔 Quizás</div>
+        <div class="ema-opt" id="int-si" onclick="selectInt('si')">⚡ Sí</div>
+      </div>
+    </div>
+
+    <!-- SCQ-NOW: Ítem 3 — Control percibido -->
+    <div style="margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">3. Siento que puedo resistir el deseo en este momento</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
+        <div class="ema-opt" id="ctrl-si" onclick="selectCtrl('si')">✅ Sí</div>
+        <div class="ema-opt" id="ctrl-dificil" onclick="selectCtrl('dificil')">⚠️ Con dificultad</div>
+        <div class="ema-opt" id="ctrl-no" onclick="selectCtrl('no')">🚨 No puedo</div>
+      </div>
+    </div>
+
+    <!-- Emoción -->
+    <div style="margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">4. ¿Cómo te sientes emocionalmente ahora?</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
         <div class="ema-opt" id="emo-tranquilo" onclick="selectEmo('tranquilo')">😌 Tranquilo/a</div>
         <div class="ema-opt" id="emo-ansioso" onclick="selectEmo('ansioso')">😰 Ansioso/a</div>
         <div class="ema-opt" id="emo-triste" onclick="selectEmo('triste')">😔 Triste</div>
         <div class="ema-opt" id="emo-enojado" onclick="selectEmo('enojado')">😠 Enojado/a</div>
         <div class="ema-opt" id="emo-solo" onclick="selectEmo('solo')">😶 Solo/a</div>
-        <div class="ema-opt" id="emo-bien" onclick="selectEmo('bien')">😊 Bien</div>
+        <div class="ema-opt" id="emo-aburrido" onclick="selectEmo('aburrido')">😑 Aburrido/a</div>
         <div class="ema-opt" id="emo-cansado" onclick="selectEmo('cansado')">😴 Cansado/a</div>
-        <div class="ema-opt" id="emo-otro" onclick="selectEmo('otro')">💭 Otro</div>
+        <div class="ema-opt" id="emo-bien" onclick="selectEmo('bien')">😊 Bien</div>
       </div>
     </div>
 
-    <!-- 3. Situación -->
-    <div style="margin-bottom:1.2rem">
-      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">3. ¿Dónde estás y con quién?</p>
+    <!-- Situación -->
+    <div style="margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">5. ¿Dónde estás y con quién?</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
         <div class="ema-opt" id="sit-solo" onclick="selectSit('solo')">🏠 Solo/a en casa</div>
         <div class="ema-opt" id="sit-familia" onclick="selectSit('familia')">👨‍👩‍👦 Con familia</div>
         <div class="ema-opt" id="sit-amigos" onclick="selectSit('amigos')">👥 Con amigos</div>
-        <div class="ema-opt" id="sit-trabajo" onclick="selectSit('trabajo')">💼 En trabajo</div>
+        <div class="ema-opt" id="sit-trabajo" onclick="selectSit('trabajo')">💼 En trabajo/estudio</div>
         <div class="ema-opt" id="sit-riesgo" onclick="selectSit('riesgo')">⚠️ Lugar de riesgo</div>
         <div class="ema-opt" id="sit-otro" onclick="selectSit('otro')">📍 Otro lugar</div>
       </div>
     </div>
 
-    <!-- 4. Pensamiento de consumo -->
-    <div style="margin-bottom:1.2rem">
-      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">4. ¿Estás teniendo pensamientos de consumir?</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
-        <div class="ema-opt" id="pens-no" onclick="selectPens('no')">✅ No</div>
-        <div class="ema-opt" id="pens-leve" onclick="selectPens('leve')">💭 Leve</div>
-        <div class="ema-opt" id="pens-intenso" onclick="selectPens('intenso')">🔥 Intenso</div>
-      </div>
-    </div>
-
-    <!-- 5. Estrategia -->
+    <!-- Estrategia -->
     <div style="margin-bottom:1rem">
-      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">5. Si hubo craving, ¿qué hiciste? <span style="color:var(--muted);font-weight:400">(opcional)</span></p>
+      <p style="font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:.5rem">6. Si hubo deseo, ¿qué hiciste? <span style="color:var(--muted);font-weight:400">(opcional)</span></p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
         <div class="ema-opt" id="est-ninguno" onclick="selectEst('ninguno')">— No hubo</div>
         <div class="ema-opt" id="est-respiro" onclick="selectEst('respiro')">🫁 Respiré</div>
@@ -502,13 +533,12 @@
       </div>
     </div>
 
-    <button class="save-btn" id="emaSaveBtn" onclick="saveEMA()">Enviar evaluación a mi terapeuta</button>
+    <button class="save-btn" id="emaSaveBtn" onclick="saveEMA()">Registrar y enviar a mi terapeuta</button>
     <div id="emaSyncMsg" class="sync-msg" style="display:none"></div>
   </div>
 
-  <!-- EMA HISTORY -->
   <div style="margin-top:1rem">
-    <p style="font-family:var(--display);font-weight:700;font-size:.88rem;color:var(--muted);margin-bottom:.5rem">Mis últimas evaluaciones</p>
+    <p style="font-family:var(--display);font-weight:700;font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Mis últimas evaluaciones</p>
     <div id="emaList"></div>
   </div>
 </section>
@@ -709,36 +739,98 @@ function runCycle() {
     renderContacts();
   }
 
-// ── EMA ──
-  let emaEmo = '', emaSit = '', emaPens = '', emaEst = '';
+// ── EMA + EMI ──
+  let emaEmo='', emaSit='', emaEst='', emaInt='', emaCtrl='';
   let emaEntries = JSON.parse(localStorage.getItem('emaEntries') || '[]');
 
-  function selectEmo(v) { emaEmo = v; document.querySelectorAll('[id^="emo-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('emo-'+v)?.classList.add('selected'); }
-  function selectSit(v) { emaSit = v; document.querySelectorAll('[id^="sit-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('sit-'+v)?.classList.add('selected'); }
-  function selectPens(v) { emaPens = v; document.querySelectorAll('[id^="pens-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('pens-'+v)?.classList.add('selected'); }
-  function selectEst(v) { emaEst = v; document.querySelectorAll('[id^="est-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('est-'+v)?.classList.add('selected'); }
-
-  function updateUrgeColor(v) {
+  function onUrgeChange(v) {
     const labels = ['Sin deseo','Muy leve','Leve','Moderado','Moderado','Medio','Medio-alto','Alto','Muy alto','Crítico','Emergencia'];
-    document.getElementById('urgeColorLabel').textContent = labels[v] || '';
+    const colors = ['var(--safe)','var(--safe)','var(--safe)','var(--safe)','var(--warning)','var(--warning)','var(--warning)','var(--danger)','var(--danger)','var(--danger)','var(--danger)'];
     const num = document.getElementById('emaUrgeNum');
-    num.style.color = v >= 7 ? 'var(--danger)' : v >= 4 ? 'var(--warning)' : 'var(--safe)';
+    const lbl = document.getElementById('urgeLabel');
+    num.textContent = v;
+    num.style.color = colors[v];
+    lbl.textContent = labels[v];
+    lbl.style.color = colors[v];
   }
+
+  function selectInt(v) { emaInt=v; document.querySelectorAll('[id^="int-"]').forEach(e=>{e.classList.remove('selected','selected-danger');}); const el=document.getElementById('int-'+v); if(v==='si') el.classList.add('selected-danger'); else el.classList.add('selected'); }
+  function selectCtrl(v) { emaCtrl=v; document.querySelectorAll('[id^="ctrl-"]').forEach(e=>{e.classList.remove('selected','selected-danger');}); const el=document.getElementById('ctrl-'+v); if(v==='no') el.classList.add('selected-danger'); else el.classList.add('selected'); }
+  function selectEmo(v) { emaEmo=v; document.querySelectorAll('[id^="emo-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('emo-'+v)?.classList.add('selected'); }
+  function selectSit(v) { emaSit=v; document.querySelectorAll('[id^="sit-"]').forEach(e=>{e.classList.remove('selected','selected-danger');}); const el=document.getElementById('sit-'+v); if(v==='riesgo') el.classList.add('selected-danger'); else el.classList.add('selected'); }
+  function selectEst(v) { emaEst=v; document.querySelectorAll('[id^="est-"]').forEach(e=>e.classList.remove('selected')); document.getElementById('est-'+v)?.classList.add('selected'); }
+
+  // EMI — Intervención Momentánea Ecológica
+  function buildEMI(urge, emo, sit, ctrl, int_val) {
+    const isHighRisk = urge>=7 || ctrl==='no' || int_val==='si' || sit==='riesgo';
+    const isMedRisk  = urge>=4 || ctrl==='dificil' || int_val==='quizas';
+
+    const emoInterventions = {
+      ansioso: { title:'Estás ansioso/a', tip:'La ansiedad amplifica el deseo. Tu sistema nervioso necesita regularse primero.', tech:'Usa la respiración 4-4-4: inhala 4 seg → retén 4 → exhala 4. Hazlo 3 veces ahora.' },
+      triste: { title:'Estás triste', tip:'La tristeza activa el circuito de recompensa buscando alivio rápido. Es neurobiología, no debilidad.', tech:'Llama a alguien que te quiera ahora. No necesitas explicar todo — solo hacer contacto.' },
+      enojado: { title:'Estás enojado/a', tip:'El enojo eleva el cortisol y reduce el control ejecutivo. No decidas nada en este estado.', tech:'Sal del espacio donde estás. Camina 5 minutos en dirección contraria al riesgo.' },
+      solo: { title:'Te sientes solo/a', tip:'La soledad es uno de los mayores predictores de recaída. El aislamiento retroalimenta el deseo.', tech:'Envía un mensaje o llama a alguien de tu red ahora mismo. Un contacto rompe el ciclo.' },
+      aburrido: { title:'Estás aburrido/a', tip:'El aburrimiento activa la búsqueda de estimulación. El cerebro no distingue bien entre necesidad real y deseo de consumo.', tech:'Cambia de actividad ahora: muévete, pon música, sal a caminar. Cualquier cambio de estímulo ayuda.' },
+      cansado: { title:'Estás cansado/a', tip:'La fatiga baja la resistencia al craving. No es el momento para tomar decisiones difíciles solo/a.', tech:'Si puedes, descansa. Si no, evita el aislamiento y mantente en un lugar seguro.' },
+      tranquilo: { title:'Estás tranquilo/a', tip:'Buen momento para reforzar lo que está funcionando.', tech:'Registra qué hiciste bien hoy. Ese hábito fortalece tu autoeficacia.' },
+      bien: { title:'Estás bien', tip:'La complacencia puede ser una señal temprana de alerta. Mantente alerta.', tech:'Revisa tus compromisos del día en el panel Mi Plan.' }
+    };
+
+    const sitAlerts = {
+      riesgo: '⚠️ Estás en un lugar de riesgo — sal de ahí ahora. Ese es el paso más importante.',
+      solo: '🏠 Estás solo/a. Llama a alguien de tu red antes de que el deseo suba más.',
+      amigos: '👥 Si estás con personas que consumen, busca una excusa para salir del grupo ahora.'
+    };
+
+    const intervention = emoInterventions[emo] || { title:'Momento difícil', tip:'El deseo es temporal. Siempre baja si no actúas sobre él.', tech:'Respira profundo y llama a tu terapeuta.' };
+    const sitAlert = sitAlerts[sit] || '';
+
+    if (isHighRisk) {
+      return `
+        <div class="emi-header" style="color:var(--danger)">🚨 Intervención de Apoyo — Craving Alto</div>
+        <div class="emi-step danger"><strong>Tu evaluación indica riesgo elevado.</strong> El deseo es intenso pero temporal — dura entre 15 y 30 minutos y baja solo si no actúas.</div>
+        ${sitAlert ? `<div class="emi-step danger">${sitAlert}</div>` : ''}
+        <div class="emi-step warning"><strong>${intervention.title}.</strong> ${intervention.tip}</div>
+        <div class="emi-step"><strong>Acción ahora:</strong> ${intervention.tech}</div>
+        <div class="emi-step"><strong>Recuerda:</strong> "Siento que puedo resistir la urgencia de consumir en este momento." Repítelo en voz alta.</div>
+        <button class="emi-call-btn" onclick="window.location.href='tel:+51995410502'">📞 Llamar a mi terapeuta ahora</button>
+        <button onclick="closeEMI()" style="display:block;width:100%;padding:.7rem;margin-top:.5rem;border:2px solid var(--border);border-radius:10px;background:transparent;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">Ya estoy mejor — cerrar</button>`;
+    } else if (isMedRisk) {
+      return `
+        <div class="emi-header" style="color:var(--warning)">⚠️ Señal de Alerta — Craving Moderado</div>
+        <div class="emi-step warning"><strong>${intervention.title}.</strong> ${intervention.tip}</div>
+        ${sitAlert ? `<div class="emi-step warning">${sitAlert}</div>` : ''}
+        <div class="emi-step"><strong>Técnica recomendada:</strong> ${intervention.tech}</div>
+        <div class="emi-step"><strong>Monitorea:</strong> Si el deseo sube a 7 o más, toca el botón rojo de arriba o llama a tu terapeuta.</div>
+        <button onclick="closeEMI()" style="display:block;width:100%;padding:.7rem;margin-top:.8rem;background:var(--warning);color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">Entendido — aplicar técnica</button>`;
+    } else {
+      return `
+        <div class="emi-header" style="color:var(--safe)">✅ Evaluación Registrada</div>
+        <div class="emi-step"><strong>Tu nivel de deseo es bajo.</strong> ${intervention.tip}</div>
+        <div class="emi-step"><strong>Acción positiva:</strong> ${intervention.tech}</div>
+        <button onclick="closeEMI()" style="display:block;width:100%;padding:.7rem;margin-top:.8rem;background:var(--safe);color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">👍 Continuar</button>`;
+    }
+  }
+
+  function openEMI(urge, emo, sit, ctrl, int_val) {
+    document.getElementById('emiContent').innerHTML = buildEMI(urge, emo, sit, ctrl, int_val);
+    document.getElementById('emiOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeEMI() { document.getElementById('emiOverlay').classList.remove('open'); document.body.style.overflow=''; }
+  function closeEMIOutside(e) { if(e.target===document.getElementById('emiOverlay')) closeEMI(); }
 
   async function saveEMA() {
     const urge = parseInt(document.getElementById('emaUrge').value);
-    if (!emaEmo || !emaSit || !emaPens) { alert('Completa al menos emoción, situación y pensamiento.'); return; }
+    if (!emaEmo || !emaSit || !emaInt || !emaCtrl) { alert('Completa los ítems 1 al 5 para continuar.'); return; }
+
     const btn = document.getElementById('emaSaveBtn');
-    btn.disabled = true; btn.textContent = 'Guardando…';
+    btn.disabled=true; btn.textContent='Guardando…';
 
     const entry = {
-      type: 'ema',
-      patient_name: patientName,
-      urge,
-      emotion: emaEmo,
-      situation: emaSit,
-      craving_thought: emaPens,
-      strategy: emaEst || null,
+      type:'ema', patient_name:patientName,
+      urge, intention:emaInt, control:emaCtrl,
+      emotion:emaEmo, situation:emaSit, strategy:emaEst||null,
       created_at: new Date().toISOString()
     };
 
@@ -747,49 +839,49 @@ function runCycle() {
     renderEMA();
 
     const msg = document.getElementById('emaSyncMsg');
-    msg.style.display = 'block';
-    if (db && SUPABASE_URL !== 'PEGA_TU_URL_AQUI') {
+    msg.style.display='block';
+    if (db && SUPABASE_URL!=='PEGA_TU_URL_AQUI') {
       try {
-        const { error } = await db.from('ema').insert([entry]);
-        if (error) throw error;
-        msg.className = 'sync-msg sync-ok';
-        msg.textContent = '✓ Evaluación enviada a tu terapeuta.';
+        const {error} = await db.from('ema').insert([entry]);
+        if(error) throw error;
+        msg.className='sync-msg sync-ok'; msg.textContent='✓ Enviado a tu terapeuta.';
       } catch(e) {
-        msg.className = 'sync-msg sync-err';
-        msg.textContent = '⚠ Sin conexión — guardado en tu celular.';
+        msg.className='sync-msg sync-err'; msg.textContent='⚠ Sin conexión — guardado localmente.';
       }
     } else {
-      msg.className = 'sync-msg sync-err';
-      msg.textContent = '⚠ App no configurada aún. Guardado localmente.';
+      msg.className='sync-msg sync-err'; msg.textContent='⚠ Guardado en tu celular.';
     }
 
-    // Reset
-    btn.disabled = false; btn.textContent = 'Enviar evaluación a mi terapeuta';
-    document.getElementById('emaUrge').value = 0;
-    document.getElementById('emaUrgeNum').textContent = '0';
-    emaEmo=''; emaSit=''; emaPens=''; emaEst='';
-    document.querySelectorAll('.ema-opt').forEach(e=>e.classList.remove('selected'));
-    setTimeout(()=>{ msg.style.display='none'; }, 4000);
+    btn.disabled=false; btn.textContent='Registrar y enviar a mi terapeuta';
+    document.getElementById('emaUrge').value=0; onUrgeChange(0);
+    emaEmo=''; emaSit=''; emaEst=''; emaInt=''; emaCtrl='';
+    document.querySelectorAll('.ema-opt').forEach(e=>e.classList.remove('selected','selected-danger'));
+    setTimeout(()=>{ msg.style.display='none'; }, 3000);
+
+    // Activar EMI
+    setTimeout(()=>{ openEMI(urge, emaEmo||'tranquilo', emaSit||'otro', emaCtrl||'si', emaInt||'no'); }, 300);
   }
 
   function renderEMA() {
     const list = document.getElementById('emaList');
-    if (!list) return;
-    if (!emaEntries.length) { list.innerHTML='<p style="color:var(--muted);font-size:.85rem;text-align:center">Aún no hay evaluaciones.</p>'; return; }
-    const emoLabels = {tranquilo:'😌 Tranquilo/a',ansioso:'😰 Ansioso/a',triste:'😔 Triste',enojado:'😠 Enojado/a',solo:'😶 Solo/a',bien:'😊 Bien',cansado:'😴 Cansado/a',otro:'💭 Otro'};
-    const pensLabels = {no:'✅ Sin pensamientos',leve:'💭 Leve',intenso:'🔥 Intenso'};
-    list.innerHTML = emaEntries.slice(0,10).map(e => {
-      const d = new Date(e.created_at);
-      const fecha = isNaN(d)?'':d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-      const urgeColor = e.urge>=7?'var(--danger)':e.urge>=4?'var(--warning)':'var(--safe)';
-      return `<div class="ema-entry">
+    if(!list) return;
+    if(!emaEntries.length) { list.innerHTML='<p style="color:var(--muted);font-size:.85rem;text-align:center">Aún no hay evaluaciones.</p>'; return; }
+    const emoL={tranquilo:'😌 Tranquilo',ansioso:'😰 Ansioso',triste:'😔 Triste',enojado:'😠 Enojado',solo:'😶 Solo',aburrido:'😑 Aburrido',cansado:'😴 Cansado',bien:'😊 Bien'};
+    const ctrlL={si:'✅ Resiste',dificil:'⚠️ Con dificultad',no:'🚨 No puede'};
+    const intL={no:'❌ No consumiría',quizas:'🤔 Quizás',si:'⚡ Sí consumiría'};
+    list.innerHTML = emaEntries.slice(0,10).map(e=>{
+      const d=new Date(e.created_at);
+      const fecha=isNaN(d)?'':d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const urgeColor=e.urge>=7?'var(--danger)':e.urge>=4?'var(--warning)':'var(--safe)';
+      const isDanger=e.urge>=7||e.control==='no'||e.intention==='si';
+      return `<div class="ema-entry" style="${isDanger?'border-color:var(--danger)':''}">
         <div class="ema-date">${fecha}</div>
-        <div style="font-weight:700;color:${urgeColor}">Craving: ${e.urge}/10</div>
+        <div style="font-weight:800;color:${urgeColor};font-family:var(--display)">Craving: ${e.urge}/10</div>
         <div class="ema-chips">
-          ${e.emotion?`<span class="ema-chip">${emoLabels[e.emotion]||e.emotion}</span>`:''}
-          ${e.situation?`<span class="ema-chip">📍 ${e.situation}</span>`:''}
-          ${e.craving_thought?`<span class="ema-chip">${pensLabels[e.craving_thought]||e.craving_thought}</span>`:''}
-          ${e.strategy&&e.strategy!=='ninguno'?`<span class="ema-chip">💡 ${e.strategy}</span>`:''}
+          ${e.emotion?`<span class="ema-chip">${emoL[e.emotion]||e.emotion}</span>`:''}
+          ${e.control?`<span class="ema-chip ${e.control==='no'?'danger':''}">${ctrlL[e.control]||e.control}</span>`:''}
+          ${e.intention?`<span class="ema-chip ${e.intention==='si'?'danger':''}">${intL[e.intention]||e.intention}</span>`:''}
+          ${e.situation?`<span class="ema-chip ${e.situation==='riesgo'?'danger':''}">📍 ${e.situation}</span>`:''}
         </div>
       </div>`;
     }).join('');
