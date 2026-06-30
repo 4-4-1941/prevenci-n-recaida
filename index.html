@@ -37,6 +37,7 @@
   .crisis-bar{background:var(--danger);color:#fff;text-align:center;padding:.65rem 1rem;font-family:var(--display);font-weight:800;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;position:sticky;top:0;z-index:100;}
   .pulse{width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite;flex-shrink:0;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+  @keyframes waveFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.1);}}
 
   /* ── CRISIS MODAL ── */
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:1rem;}
@@ -279,13 +280,88 @@
       <div class="halt-item" id="h-angry" onclick="toggleHalt('angry')"><div class="halt-icon">😠</div><div class="halt-name">ENOJO</div><div class="halt-desc">¿Algo te molesta?</div></div>
       <div class="halt-item" id="h-lonely" onclick="toggleHalt('lonely')"><div class="halt-icon">😔</div><div class="halt-name">SOLEDAD</div><div class="halt-desc">¿Te sientes solo?</div></div>
       <div class="halt-item" id="h-tired" onclick="toggleHalt('tired')"><div class="halt-icon">😴</div><div class="halt-name">CANSANCIO</div><div class="halt-desc">¿Dormiste bien?</div></div>
+      <div class="halt-item" id="h-emotional" onclick="toggleHalt('emotional')"><div class="halt-icon">🌪️</div><div class="halt-name">EMOCIONAL</div><div class="halt-desc">¿Emociones intensas?</div></div>
+      <div class="halt-item" id="h-restless" onclick="toggleHalt('restless')" style="grid-column:1/-1;background:rgba(79,142,247,.05);border-color:var(--blue)"><div class="halt-icon">🌊</div><div class="halt-name" style="color:var(--blue)">REPLANTEAR</div><div class="halt-desc">Retrasar el impulso · Urge Surfing</div></div>
     </div>
     <div class="halt-response" id="resp-hungry"><strong>🍽️ Tienes hambre.</strong> Come algo ahora. El cerebro confunde hambre con deseo de consumir. Come antes de tomar cualquier decisión.</div>
-    <div class="halt-response" id="resp-angry"><strong>😠 Estás enojado.</strong> El enojo es válido. Escribe lo que sientes, camina, o llama a alguien. No consumas encima del enojo.</div>
-    <div class="halt-response" id="resp-lonely"><strong>😔 Te sientes solo.</strong> Llama a alguien ahora — no importa el motivo. Solo hacer contacto reduce el riesgo.</div>
-    <div class="halt-response" id="resp-tired"><strong>😴 Estás cansado.</strong> El agotamiento baja tu capacidad de resistir. Descansa si puedes. No estés solo en este estado.</div>
+    <div class="halt-response" id="resp-angry"><strong>😠 Estás enojado/a.</strong> El enojo es válido. Escribe lo que sientes, camina, o llama a alguien. No consumas encima del enojo.</div>
+    <div class="halt-response" id="resp-lonely"><strong>😔 Te sientes solo/a.</strong> Llama a alguien ahora — no importa el motivo. Solo hacer contacto reduce el riesgo.</div>
+    <div class="halt-response" id="resp-tired"><strong>😴 Estás cansado/a.</strong> El agotamiento baja tu capacidad de resistir. Descansa si puedes. No estés solo en este estado.</div>
+    <div class="halt-response" id="resp-emotional"><strong>🌪️ Emociones intensas.</strong> Cuando las emociones desbordan, el cerebro busca alivio rápido. No actúes desde ese estado — espera 20 minutos antes de tomar cualquier decisión importante.</div>
+    <div class="halt-response" id="resp-restless" style="background:var(--blue-bg);border-color:var(--blue);color:var(--blue)">
+      <strong>🌊 Replantear · Retrasar el impulso.</strong> El deseo de consumir es como una ola — sube, llega a su pico y baja solo. No tienes que luchar contra él, solo observarlo pasar.
+      <button onclick="openSurfing()" style="display:block;width:100%;margin-top:.8rem;padding:.7rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">🌊 Iniciar Urge Surfing guiado</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>💡 ¿Por qué funciona el HALTER?</h3>
+    <p style="font-size:.88rem;color:var(--muted)">Cuando el cerebro está bajo estas seis condiciones, su capacidad para resistir el deseo de consumir se reduce significativamente. <strong>H</strong>ambre · <strong>A</strong>nger · <strong>L</strong>oneliness · <strong>T</strong>iredness · <strong>E</strong>motional · <strong>R</strong>eplantear. Reconocerlo activa el control ejecutivo y te da poder de actuar antes de que el deseo sea abrumador.</p>
   </div>
 </section>
+
+<!-- ── URGE SURFING MODAL ── -->
+<div class="overlay" id="surfingOverlay" onclick="closeSurfingOutside(event)">
+  <div class="modal" style="background:linear-gradient(135deg,#0a1628,#0d2137);color:#e8f4fd;border:1px solid #1a4a6b">
+    <button class="modal-close" onclick="closeSurfing()" style="color:#7ab8d4">✕</button>
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="font-size:2rem;margin-bottom:.3rem">🌊</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:1.1rem;color:#7dd3fc">Urge Surfing</div>
+      <div style="font-size:.78rem;color:#4a8fa8;margin-top:.2rem">Técnica de Marlatt & Gordon</div>
+    </div>
+
+    <!-- Audio de olas -->
+    <audio id="wavesAudio" loop>
+      <source src="https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3" type="audio/mpeg">
+      <source src="https://assets.mixkit.co/sfx/preview/mixkit-sea-waves-loop-1196.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Video olas YouTube -->
+    <div id="waveVideo" style="display:none;border-radius:10px;overflow:hidden;margin-bottom:.8rem">
+      <iframe id="ytFrame" width="100%" height="180" src="https://www.youtube.com/embed/bn9F19Hi1Lk?autoplay=1&mute=0&loop=1&playlist=bn9F19Hi1Lk&controls=0&showinfo=0" frameborder="0" allow="autoplay" allowfullscreen style="display:block"></iframe>
+    </div>
+
+    <!-- Wave animation -->
+    <div id="waveAnim" style="text-align:center;padding:1.5rem 0">
+      <div style="font-size:3rem;animation:waveFloat 3s ease-in-out infinite" id="waveEmoji">🌊</div>
+      <div style="margin-top:.5rem">
+        <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin:0 auto;max-width:200px">
+          <div id="waveProgress" style="height:100%;background:linear-gradient(90deg,#38bdf8,#7dd3fc);border-radius:3px;width:0%;transition:width 1s linear"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guía de texto sincronizada -->
+    <div id="surfGuide" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1rem;text-align:center;min-height:80px;margin-bottom:.8rem">
+      <div style="font-size:1.2rem;margin-bottom:.4rem" id="surfIcon">🫁</div>
+      <div style="font-family:var(--display);font-weight:700;font-size:.95rem;color:#7dd3fc;margin-bottom:.3rem" id="surfTitle">Preparándote…</div>
+      <div style="font-size:.85rem;color:#a0c4d8;line-height:1.6" id="surfText">Cierra los ojos si puedes. Respira profundo.</div>
+    </div>
+
+    <!-- Timer -->
+    <div style="text-align:center;margin-bottom:.8rem">
+      <span style="font-family:var(--display);font-size:2rem;font-weight:800;color:#38bdf8" id="surfTimer">3:00</span>
+      <div style="font-size:.72rem;color:#4a8fa8;margin-top:.1rem">minutos restantes</div>
+    </div>
+
+    <!-- Controls -->
+    <div style="display:flex;gap:.5rem">
+      <button id="surfStartBtn" onclick="startSurfing()" style="flex:1;padding:.75rem;background:#0369a1;color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">▶ Iniciar</button>
+      <button onclick="toggleMedia()" style="padding:.75rem 1rem;background:rgba(255,255,255,.1);color:#7dd3fc;border:1px solid rgba(255,255,255,.15);border-radius:10px;font-family:var(--display);font-weight:700;font-size:.85rem;cursor:pointer" id="mediaToggle">📺 Video</button>
+    </div>
+
+    <!-- Post-exercise check -->
+    <div id="surfPost" style="display:none;margin-top:1rem;padding:1rem;background:rgba(62,207,142,.1);border-radius:10px;border:1px solid rgba(62,207,142,.3)">
+      <div style="font-family:var(--display);font-weight:700;font-size:.9rem;color:#3ecf8e;margin-bottom:.6rem">✅ Ejercicio completado</div>
+      <p style="font-size:.85rem;color:#a0c4d8;margin-bottom:.8rem">¿Cómo está el deseo ahora comparado con antes?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem">
+        <button onclick="surfResult('bajo')" style="padding:.5rem;background:rgba(62,207,142,.2);color:#3ecf8e;border:1px solid #3ecf8e;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.8rem;cursor:pointer">↓ Bajó</button>
+        <button onclick="surfResult('igual')" style="padding:.5rem;background:rgba(240,180,41,.15);color:#f0b429;border:1px solid #f0b429;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.8rem;cursor:pointer">→ Igual</button>
+        <button onclick="surfResult('subio')" style="padding:.5rem;background:rgba(224,82,82,.15);color:#e05252;border:1px solid #e05252;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.8rem;cursor:pointer">↑ Subió</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ── TÉCNICAS ── -->
 <section id="tecnicas" class="panel">
@@ -583,7 +659,7 @@
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" onclick="showPanel('senales',this)"><span class="nav-icon">🚦</span>Señales</button>
-  <button class="nav-btn" onclick="showPanel('halt',this)"><span class="nav-icon">⚠️</span>HALT</button>
+  <button class="nav-btn" onclick="showPanel('halt',this)"><span class="nav-icon">⚠️</span>HALTER</button>
   <button class="nav-btn" onclick="showPanel('tecnicas',this)"><span class="nav-icon">🧘</span>Técnicas</button>
   <button class="nav-btn" onclick="showPanel('plan',this)"><span class="nav-icon">📋</span>Plan</button>
   <button class="nav-btn" onclick="showPanel('red',this)"><span class="nav-icon">📞</span>Red</button>
@@ -654,6 +730,106 @@ function toggleHalt(key) {
   haltActive[key] = !haltActive[key];
   document.getElementById('h-'+key).classList.toggle('active', haltActive[key]);
   document.getElementById('resp-'+key).classList.toggle('visible', haltActive[key]);
+}
+
+// ── URGE SURFING ──
+let surfInterval = null, surfSeconds = 180, surfRunning = false, videoVisible = false;
+
+const surfScript = [
+  { at:0,   icon:'🫁', title:'Preparándote…',           text:'Cierra los ojos si puedes. Respira profundo tres veces.' },
+  { at:15,  icon:'🌊', title:'Observa la ola',           text:'El deseo de consumir es como esta ola. Está llegando. No tienes que huir — solo observarla.' },
+  { at:35,  icon:'👁️', title:'Solo observa',             text:'No luchas contra la ola. No te ahogas en ella. La observas desde la orilla de tu mente.' },
+  { at:55,  icon:'📈', title:'La ola sube…',             text:'Sientes que el deseo sube. Eso es normal. Es neurobiología, no una orden. Solo una sensación.' },
+  { at:75,  icon:'⛰️', title:'El pico',                  text:'El deseo ha llegado a su punto más alto. Respira. Solo 30 segundos más y empieza a bajar.' },
+  { at:100, icon:'📉', title:'La ola baja…',             text:'Empieza a bajar. Siempre baja. Tu cerebro aprende que puede tolerar esta sensación sin actuar.' },
+  { at:130, icon:'🏖️', title:'Se aleja',                 text:'La ola se retira. El deseo baja. No hiciste nada — y el deseo bajó solo. Eso es urge surfing.' },
+  { at:155, icon:'💪', title:'Casi terminando…',         text:'Cada vez que surfeas una ola sin consumir, debilitas el circuito adictivo. Estás entrenando tu cerebro.' },
+  { at:170, icon:'✨', title:'Completaste el ejercicio', text:'Lo lograste. El deseo pasó. Siempre pasa cuando no actúas sobre él.' }
+];
+
+function openSurfing() {
+  document.getElementById('surfingOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  surfSeconds = 180; surfRunning = false;
+  document.getElementById('surfTimer').textContent = '3:00';
+  document.getElementById('waveProgress').style.width = '0%';
+  document.getElementById('surfPost').style.display = 'none';
+  document.getElementById('surfStartBtn').textContent = '▶ Iniciar';
+  updateSurfGuide(0);
+}
+
+function closeSurfing() {
+  clearInterval(surfInterval); surfRunning = false;
+  const audio = document.getElementById('wavesAudio');
+  if (audio) { audio.pause(); audio.currentTime = 0; }
+  document.getElementById('surfingOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeSurfingOutside(e) {
+  if (e.target === document.getElementById('surfingOverlay')) closeSurfing();
+}
+
+function toggleMedia() {
+  videoVisible = !videoVisible;
+  document.getElementById('waveVideo').style.display = videoVisible ? 'block' : 'none';
+  document.getElementById('waveAnim').style.display = videoVisible ? 'none' : 'block';
+  document.getElementById('mediaToggle').textContent = videoVisible ? '🌊 Animación' : '📺 Video';
+  if (!videoVisible) {
+    const audio = document.getElementById('wavesAudio');
+    if (surfRunning && audio) audio.play().catch(()=>{});
+  }
+}
+
+function updateSurfGuide(elapsed) {
+  let current = surfScript[0];
+  for (const step of surfScript) { if (elapsed >= step.at) current = step; }
+  document.getElementById('surfIcon').textContent = current.icon;
+  document.getElementById('surfTitle').textContent = current.title;
+  document.getElementById('surfText').textContent = current.text;
+}
+
+function startSurfing() {
+  if (surfRunning) {
+    clearInterval(surfInterval); surfRunning = false;
+    document.getElementById('surfStartBtn').textContent = '▶ Reanudar';
+    const audio = document.getElementById('wavesAudio');
+    if (audio) audio.pause();
+    return;
+  }
+  surfRunning = true;
+  document.getElementById('surfStartBtn').textContent = '⏸ Pausar';
+  document.getElementById('surfPost').style.display = 'none';
+  if (!videoVisible) {
+    const audio = document.getElementById('wavesAudio');
+    if (audio) audio.play().catch(()=>{});
+  }
+  const totalSecs = 180;
+  surfInterval = setInterval(() => {
+    surfSeconds--;
+    const elapsed = totalSecs - surfSeconds;
+    document.getElementById('waveProgress').style.width = ((elapsed/totalSecs)*100)+'%';
+    const m = Math.floor(surfSeconds/60), s = surfSeconds%60;
+    document.getElementById('surfTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    updateSurfGuide(elapsed);
+    if (surfSeconds <= 0) {
+      clearInterval(surfInterval); surfRunning = false;
+      const audio = document.getElementById('wavesAudio');
+      if (audio) audio.pause();
+      document.getElementById('surfStartBtn').textContent = '↺ Repetir';
+      document.getElementById('surfPost').style.display = 'block';
+      surfSeconds = 180;
+    }
+  }, 1000);
+}
+
+function surfResult(result) {
+  const msgs = {
+    bajo: '✅ Excelente. El deseo bajó. Eso es el urge surfing funcionando — tu cerebro aprendió algo hoy.',
+    igual: '👍 Normal. A veces la primera ola no baja del todo. Puedes repetir el ejercicio o usar otra técnica.',
+    subio: '📞 Si el deseo subió, usa el botón de crisis arriba o llama a tu terapeuta ahora.'
+  };
+  document.getElementById('surfPost').innerHTML = `<div style="font-size:.88rem;color:#e8f4fd;text-align:center;padding:.5rem">${msgs[result]}</div><button onclick="closeSurfing()" style="display:block;width:100%;margin-top:.8rem;padding:.6rem;background:rgba(255,255,255,.1);color:#7dd3fc;border:1px solid rgba(255,255,255,.2);border-radius:8px;font-family:var(--display);font-weight:700;cursor:pointer">Cerrar</button>`;
 }
 
 // ── URGE ──
