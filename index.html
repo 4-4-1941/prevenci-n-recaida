@@ -328,9 +328,9 @@
       <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">Urge Surfing · Marlatt & Gordon (1985) · 5 fases · ~3 min</div>
     </div>
 
-    <!-- Video real de mar -->
-    <video id="wavesVideo" loop muted playsinline
-      style="width:100%;border-radius:8px;margin-bottom:1rem;display:block;max-height:180px;object-fit:cover">
+    <!-- Video real de mar — con sonido, recorte bajo para mostrar olas -->
+    <video id="wavesVideo" loop playsinline
+      style="width:100%;border-radius:8px;margin-bottom:1rem;display:block;height:180px;object-fit:cover;object-position:center bottom">
       <source src="waves.mp4" type="video/mp4">
     </video>
 
@@ -783,7 +783,7 @@ function openSurfing() {
   document.getElementById('surfStartBtn').textContent = '▶ Iniciar protocolo';
   updateSurfGuide(0);
   const vid = document.getElementById('wavesVideo');
-  if (vid) vid.play().catch(()=>{});
+  if (vid) { vid.muted = false; vid.play().catch(()=>{ vid.muted = true; vid.play().catch(()=>{}); }); }
 }
 
 function closeSurfing() {
@@ -853,11 +853,11 @@ function startSurfing() {
 
 let audioMuted = false;
 function toggleAudio() {
-  const audio = document.getElementById('wavesAudio');
+  const vid = document.getElementById('wavesVideo');
   const btn = document.getElementById('audioToggle');
   audioMuted = !audioMuted;
-  if (audio) { audio.muted = audioMuted; }
-  btn.textContent = audioMuted ? '🔊 Audio' : '🔇 Audio';
+  if (vid) vid.muted = audioMuted;
+  btn.textContent = audioMuted ? '🔊' : '🔇';
 }
 
 function surfResult(result) {
