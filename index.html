@@ -328,11 +328,12 @@
       <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">Urge Surfing · Marlatt & Gordon (1985) · 5 fases · ~3 min</div>
     </div>
 
-    <!-- Video real de mar — con sonido, recorte bajo para mostrar olas -->
-    <video id="wavesVideo" loop playsinline
-      style="width:100%;border-radius:8px;margin-bottom:1rem;display:block;height:180px;object-fit:cover;object-position:center bottom">
+    <!-- Video mar recortado — solo olas, sin cielo -->
+    <video id="wavesVideo" loop playsinline controls
+      style="width:100%;border-radius:8px;margin-bottom:1rem;display:block;height:160px;object-fit:cover;background:#000">
       <source src="waves.mp4" type="video/mp4">
     </video>
+    <p style="font-size:.73rem;color:var(--muted);text-align:center;margin-top:-.7rem;margin-bottom:.8rem">Toca el video para activar el sonido</p>
 
     <!-- Audio olas -->
     <audio id="wavesAudio" loop preload="auto">
