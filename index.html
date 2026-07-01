@@ -38,6 +38,8 @@
   .pulse{width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite;flex-shrink:0;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
   @keyframes waveFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.1);}}
+  @keyframes waveMove{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+  @keyframes waveMove2{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 
   /* ── CRISIS MODAL ── */
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:1rem;}
@@ -315,71 +317,74 @@
   </div>
 </section>
 
-<!-- ── URGE SURFING MODAL ── -->
+<!-- ── URGE SURFING MODAL — Diseño Clínico ── -->
 <div class="overlay" id="surfingOverlay" onclick="closeSurfingOutside(event)">
-  <div class="modal" style="background:linear-gradient(135deg,#0a1628,#0d2137);color:#e8f4fd;border:1px solid #1a4a6b">
-    <button class="modal-close" onclick="closeSurfing()" style="color:#7ab8d4">✕</button>
-    <div style="text-align:center;margin-bottom:1rem">
-      <div style="font-size:2rem;margin-bottom:.3rem">🌊</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:1.1rem;color:#7dd3fc">Urge Surfing</div>
-      <div style="font-size:.78rem;color:#4a8fa8;margin-top:.2rem">Técnica de Marlatt & Gordon</div>
+  <div class="modal" style="background:#fff;border:1px solid var(--border);padding:1.5rem;max-height:92vh;overflow-y:auto">
+    <button class="modal-close" onclick="closeSurfing()">✕</button>
+
+    <!-- Header clínico -->
+    <div style="border-left:4px solid var(--blue);padding-left:.9rem;margin-bottom:1rem">
+      <div style="font-family:var(--display);font-weight:800;font-size:.95rem;color:var(--text)">Protocolo de Tolerancia al Impulso</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">Urge Surfing · Marlatt & Gordon (1985) · 5 fases · ~3 min</div>
     </div>
 
-    <!-- Audio de olas — múltiples fuentes de respaldo -->
+    <!-- Video real de mar -->
+    <video id="wavesVideo" loop muted playsinline
+      style="width:100%;border-radius:8px;margin-bottom:1rem;display:block;max-height:180px;object-fit:cover">
+      <source src="waves.mp4" type="video/mp4">
+    </video>
+
+    <!-- Audio olas -->
     <audio id="wavesAudio" loop preload="auto">
       <source src="https://assets.mixkit.co/sfx/preview/mixkit-sea-waves-loop-1196.mp3" type="audio/mpeg">
-      <source src="https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Instrucción inicial visible -->
-    <div id="surfIntro" style="text-align:center;padding:.8rem;background:rgba(56,189,248,.1);border-radius:10px;margin-bottom:.8rem;border:1px solid rgba(56,189,248,.2)">
-      <div style="font-size:.85rem;color:#7dd3fc;font-family:var(--display);font-weight:700;margin-bottom:.3rem">¿Cómo funciona?</div>
-      <div style="font-size:.82rem;color:#a0c4d8;line-height:1.5">Toca <strong style="color:#38bdf8">▶ Iniciar</strong> para comenzar el audio de olas y la guía. Puedes elegir video en lugar de animación con el botón <strong style="color:#38bdf8">📺 Video</strong>.</div>
-    </div>
-
-    <!-- Video olas YouTube -->
-    <div id="waveVideo" style="display:none;border-radius:10px;overflow:hidden;margin-bottom:.8rem">
-      <iframe id="ytFrame" width="100%" height="180" src="https://www.youtube.com/embed/bn9F19Hi1Lk?autoplay=1&mute=0&loop=1&playlist=bn9F19Hi1Lk&controls=0&showinfo=0" frameborder="0" allow="autoplay" allowfullscreen style="display:block"></iframe>
-    </div>
-
-    <!-- Wave animation -->
-    <div id="waveAnim" style="text-align:center;padding:1.5rem 0">
-      <div style="font-size:3rem;animation:waveFloat 3s ease-in-out infinite" id="waveEmoji">🌊</div>
-      <div style="margin-top:.5rem">
-        <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin:0 auto;max-width:200px">
-          <div id="waveProgress" style="height:100%;background:linear-gradient(90deg,#38bdf8,#7dd3fc);border-radius:3px;width:0%;transition:width 1s linear"></div>
-        </div>
+    <!-- Progreso -->
+    <div style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);font-family:var(--display);font-weight:700;margin-bottom:.3rem">
+        <span id="phaseLabel">FASE 1 DE 5</span>
+        <span id="surfTimer">3:00</span>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div id="waveProgress" style="height:100%;background:var(--blue);border-radius:3px;width:0%;transition:width 1s linear"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:.4rem;padding:0 2px">
+        <div id="phaseDot1" style="width:8px;height:8px;border-radius:50%;background:var(--blue)"></div>
+        <div id="phaseDot2" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
+        <div id="phaseDot3" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
+        <div id="phaseDot4" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
+        <div id="phaseDot5" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
       </div>
     </div>
 
-    <!-- Guía de texto sincronizada -->
-    <div id="surfGuide" style="background:rgba(255,255,255,.05);border-radius:10px;padding:1rem;text-align:center;min-height:80px;margin-bottom:.8rem">
-      <div style="font-size:1.2rem;margin-bottom:.4rem" id="surfIcon">🫁</div>
-      <div style="font-family:var(--display);font-weight:700;font-size:.95rem;color:#7dd3fc;margin-bottom:.3rem" id="surfTitle">Preparándote…</div>
-      <div style="font-size:.85rem;color:#a0c4d8;line-height:1.6" id="surfText">Cierra los ojos si puedes. Respira profundo.</div>
+    <!-- Guía por fase -->
+    <div style="border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.8rem;background:var(--bg);min-height:95px">
+      <div style="font-family:var(--display);font-weight:700;font-size:.78rem;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem" id="surfTitle">Preparación</div>
+      <div style="font-size:.88rem;color:var(--text);line-height:1.65" id="surfText">Busca una posición cómoda. Respira profundo tres veces. No es necesario relajarse — solo observar.</div>
     </div>
 
-    <!-- Timer -->
-    <div style="text-align:center;margin-bottom:.8rem">
-      <span style="font-family:var(--display);font-size:2rem;font-weight:800;color:#38bdf8" id="surfTimer">3:00</span>
-      <div style="font-size:.72rem;color:#4a8fa8;margin-top:.1rem">minutos restantes</div>
+    <!-- Principio clínico -->
+    <div id="phasePrinciple" style="background:var(--blue-bg);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;padding:.6rem .9rem;font-size:.76rem;color:var(--blue);margin-bottom:1rem;line-height:1.5">
+      El impulso no es una orden — es una señal neurobiológica transitoria. Nombrarlo activa la corteza prefrontal y reduce la respuesta automática.
     </div>
 
-    <!-- Controls -->
-    <div style="display:flex;gap:.5rem">
-      <button id="surfStartBtn" onclick="startSurfing()" style="flex:1;padding:.75rem;background:#0369a1;color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">▶ Iniciar</button>
-      <button onclick="toggleMedia()" style="padding:.75rem 1rem;background:rgba(255,255,255,.1);color:#7dd3fc;border:1px solid rgba(255,255,255,.15);border-radius:10px;font-family:var(--display);font-weight:700;font-size:.85rem;cursor:pointer" id="mediaToggle">📺 Video</button>
+    <!-- Controles -->
+    <div style="display:flex;gap:.6rem;margin-bottom:.8rem">
+      <button id="surfStartBtn" onclick="startSurfing()" style="flex:1;padding:.8rem;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">▶ Iniciar protocolo</button>
+      <button onclick="toggleAudio()" id="audioToggle" style="padding:.8rem .9rem;background:var(--bg);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:.85rem;cursor:pointer">🔇</button>
     </div>
 
-    <!-- Post-exercise check -->
-    <div id="surfPost" style="display:none;margin-top:1rem;padding:1rem;background:rgba(62,207,142,.1);border-radius:10px;border:1px solid rgba(62,207,142,.3)">
-      <div style="font-family:var(--display);font-weight:700;font-size:.9rem;color:#3ecf8e;margin-bottom:.6rem">✅ Ejercicio completado</div>
-      <p style="font-size:.85rem;color:#a0c4d8;margin-bottom:.8rem">¿Cómo está el deseo ahora comparado con antes?</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem">
-        <button onclick="surfResult('bajo')" style="padding:.5rem;background:rgba(62,207,142,.2);color:#3ecf8e;border:1px solid #3ecf8e;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.8rem;cursor:pointer">↓ Bajó</button>
-        <button onclick="surfResult('igual')" style="padding:.5rem;background:rgba(240,180,41,.15);color:#f0b429;border:1px solid #f0b429;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.8rem;cursor:pointer">→ Igual</button>
-        <button onclick="surfResult('subio')" style="padding:.5rem;background:rgba(224,82,82,.15);color:#e05252;border:1px solid #e05252;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.8rem;cursor:pointer">↑ Subió</button>
+    <!-- Post-ejercicio -->
+    <div id="surfPost" style="display:none;border:1px solid var(--border);border-radius:8px;padding:1rem">
+      <div style="font-family:var(--display);font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.5rem">Protocolo completado — Registro de resultado</div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem">¿Cuál es la intensidad del impulso respecto al inicio?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.7rem">
+        <button onclick="surfResult('bajo')" style="padding:.6rem .3rem;background:#fff;color:var(--safe);border:1.5px solid var(--safe);border-radius:6px;font-family:var(--display);font-weight:700;font-size:.78rem;cursor:pointer">↓ Disminuyó</button>
+        <button onclick="surfResult('igual')" style="padding:.6rem .3rem;background:#fff;color:var(--warning);border:1.5px solid var(--warning);border-radius:6px;font-family:var(--display);font-weight:700;font-size:.78rem;cursor:pointer">→ Igual</button>
+        <button onclick="surfResult('subio')" style="padding:.6rem .3rem;background:#fff;color:var(--danger);border:1.5px solid var(--danger);border-radius:6px;font-family:var(--display);font-weight:700;font-size:.78rem;cursor:pointer">↑ Aumentó</button>
       </div>
+      <div id="surfResultMsg" style="display:none;font-size:.83rem;color:var(--text);padding:.7rem;background:var(--bg);border-radius:6px;border:1px solid var(--border);line-height:1.5"></div>
+      <button onclick="closeSurfing()" style="display:none;width:100%;margin-top:.6rem;padding:.7rem;background:var(--text);color:#fff;border:none;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.88rem;cursor:pointer" id="closeAfterResult">Cerrar protocolo</button>
     </div>
   </div>
 </div>
@@ -757,15 +762,15 @@ function toggleHalt(key) {
 let surfInterval = null, surfSeconds = 180, surfRunning = false, videoVisible = false;
 
 const surfScript = [
-  { at:0,   icon:'🫁', title:'Preparándote…',           text:'Cierra los ojos si puedes. Respira profundo tres veces.' },
-  { at:15,  icon:'🌊', title:'Observa la ola',           text:'El deseo de consumir es como esta ola. Está llegando. No tienes que huir — solo observarla.' },
-  { at:35,  icon:'👁️', title:'Solo observa',             text:'No luchas contra la ola. No te ahogas en ella. La observas desde la orilla de tu mente.' },
-  { at:55,  icon:'📈', title:'La ola sube…',             text:'Sientes que el deseo sube. Eso es normal. Es neurobiología, no una orden. Solo una sensación.' },
-  { at:75,  icon:'⛰️', title:'El pico',                  text:'El deseo ha llegado a su punto más alto. Respira. Solo 30 segundos más y empieza a bajar.' },
-  { at:100, icon:'📉', title:'La ola baja…',             text:'Empieza a bajar. Siempre baja. Tu cerebro aprende que puede tolerar esta sensación sin actuar.' },
-  { at:130, icon:'🏖️', title:'Se aleja',                 text:'La ola se retira. El deseo baja. No hiciste nada — y el deseo bajó solo. Eso es urge surfing.' },
-  { at:155, icon:'💪', title:'Casi terminando…',         text:'Cada vez que surfeas una ola sin consumir, debilitas el circuito adictivo. Estás entrenando tu cerebro.' },
-  { at:170, icon:'✨', title:'Completaste el ejercicio', text:'Lo lograste. El deseo pasó. Siempre pasa cuando no actúas sobre él.' }
+  { at:0,   title:'Preparación',              text:'Adopta una postura cómoda. Respira profundo tres veces. No es necesario relajarse — solo observar.' },
+  { at:15,  title:'Reconoce el impulso',      text:'El impulso de consumir está presente. No lo ignores ni lo alimentes. Solo reconócelo: "Estoy sintiendo un impulso ahora mismo."' },
+  { at:35,  title:'Observa sin actuar',       text:'Observa el impulso como si fuera externo a ti. ¿Dónde lo sientes en el cuerpo? ¿Cómo es su intensidad? No tienes que hacer nada con él.' },
+  { at:55,  title:'El impulso sube',          text:'Es normal que el impulso aumente al observarlo. Eso no significa que debas actuar. Sigue respirando. El pico es temporal.' },
+  { at:75,  title:'Punto máximo',             text:'Estás en el punto de mayor intensidad. Tu cerebro anticipa alivio con el consumo — eso es condicionamiento, no una necesidad real. Sostén la observación.' },
+  { at:100, title:'El impulso comienza a bajar', text:'Sin que hayas actuado, la intensidad empieza a disminuir. Esto es lo que Marlatt denominó la curva natural del craving.' },
+  { at:130, title:'Reducción progresiva',     text:'El sistema nervioso autónomo se regula cuando no se refuerza el impulso. Continúa observando sin intervenir.' },
+  { at:155, title:'Cierre del ejercicio',     text:'Cada vez que toleras un impulso sin actuar sobre él, debilitas el circuito de reforzamiento. Estás modificando la respuesta condicionada.' },
+  { at:170, title:'Completado',               text:'El impulso pasó sin consumo. Eso es evidencia directa de que puedes tolerar el malestar. Registra este resultado.' }
 ];
 
 function openSurfing() {
@@ -775,14 +780,18 @@ function openSurfing() {
   document.getElementById('surfTimer').textContent = '3:00';
   document.getElementById('waveProgress').style.width = '0%';
   document.getElementById('surfPost').style.display = 'none';
-  document.getElementById('surfStartBtn').textContent = '▶ Iniciar';
+  document.getElementById('surfStartBtn').textContent = '▶ Iniciar protocolo';
   updateSurfGuide(0);
+  const vid = document.getElementById('wavesVideo');
+  if (vid) vid.play().catch(()=>{});
 }
 
 function closeSurfing() {
   clearInterval(surfInterval); surfRunning = false;
   const audio = document.getElementById('wavesAudio');
   if (audio) { audio.pause(); audio.currentTime = 0; }
+  const vid = document.getElementById('wavesVideo');
+  if (vid) { vid.pause(); vid.currentTime = 0; }
   document.getElementById('surfingOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -805,7 +814,6 @@ function toggleMedia() {
 function updateSurfGuide(elapsed) {
   let current = surfScript[0];
   for (const step of surfScript) { if (elapsed >= step.at) current = step; }
-  document.getElementById('surfIcon').textContent = current.icon;
   document.getElementById('surfTitle').textContent = current.title;
   document.getElementById('surfText').textContent = current.text;
 }
@@ -823,10 +831,8 @@ function startSurfing() {
   document.getElementById('surfPost').style.display = 'none';
   const intro = document.getElementById('surfIntro');
   if (intro) intro.style.display = 'none';
-  if (!videoVisible) {
-    const audio = document.getElementById('wavesAudio');
-    if (audio) audio.play().catch(()=>{});
-  }
+  const audio = document.getElementById('wavesAudio');
+  if (audio) audio.play().catch(()=>{});
   const totalSecs = 180;
   surfInterval = setInterval(() => {
     surfSeconds--;
@@ -837,7 +843,6 @@ function startSurfing() {
     updateSurfGuide(elapsed);
     if (surfSeconds <= 0) {
       clearInterval(surfInterval); surfRunning = false;
-      const audio = document.getElementById('wavesAudio');
       if (audio) audio.pause();
       document.getElementById('surfStartBtn').textContent = '↺ Repetir';
       document.getElementById('surfPost').style.display = 'block';
@@ -846,13 +851,24 @@ function startSurfing() {
   }, 1000);
 }
 
+let audioMuted = false;
+function toggleAudio() {
+  const audio = document.getElementById('wavesAudio');
+  const btn = document.getElementById('audioToggle');
+  audioMuted = !audioMuted;
+  if (audio) { audio.muted = audioMuted; }
+  btn.textContent = audioMuted ? '🔊 Audio' : '🔇 Audio';
+}
+
 function surfResult(result) {
   const msgs = {
-    bajo: '✅ Excelente. El deseo bajó. Eso es el urge surfing funcionando — tu cerebro aprendió algo hoy.',
-    igual: '👍 Normal. A veces la primera ola no baja del todo. Puedes repetir el ejercicio o usar otra técnica.',
-    subio: '📞 Si el deseo subió, usa el botón de crisis arriba o llama a tu terapeuta ahora.'
+    bajo: 'Resultado esperado. El impulso disminuyó sin consumo. Registra este episodio en tu Diario.',
+    igual: 'Resultado aceptable en primera exposición. La tolerancia al malestar mejora con práctica repetida. Puedes repetir el ejercicio.',
+    subio: 'Si el impulso aumentó, activa el protocolo de crisis: usa el botón rojo arriba o llama a tu terapeuta ahora.'
   };
-  document.getElementById('surfPost').innerHTML = `<div style="font-size:.88rem;color:#e8f4fd;text-align:center;padding:.5rem">${msgs[result]}</div><button onclick="closeSurfing()" style="display:block;width:100%;margin-top:.8rem;padding:.6rem;background:rgba(255,255,255,.1);color:#7dd3fc;border:1px solid rgba(255,255,255,.2);border-radius:8px;font-family:var(--display);font-weight:700;cursor:pointer">Cerrar</button>`;
+  const msgEl = document.getElementById('surfResultMsg');
+  msgEl.style.display = 'block';
+  msgEl.textContent = msgs[result];
 }
 
 // ── URGE ──
