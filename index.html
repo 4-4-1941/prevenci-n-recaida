@@ -271,9 +271,25 @@
 <section id="halt" class="panel">
   <div class="section-head">
     <div class="section-icon">⚠️</div>
-    <h2>¿Qué me está pasando?</h2>
-    <p>Muchas veces las ganas de consumir son sobre un estado que sientes. Toca lo que sientes ahora:</p>
+    <h2>HALTER</h2>
+    <p>Herramienta de automonitoreo para identificar estados de vulnerabilidad ante el consumo.</p>
   </div>
+
+  <!-- INTRO CARD — va primero -->
+  <div class="card" style="background:linear-gradient(135deg,#eaf2fb,#f7f4ef);border-color:#aed6f1;margin-bottom:1rem">
+    <h3 style="color:var(--blue)">💡 ¿Qué es el HALTER?</h3>
+    <p style="font-size:.88rem;color:var(--text);margin-bottom:.7rem">El deseo de consumir muchas veces no es sobre la sustancia — es sobre un <strong>estado interno que no has reconocido todavía</strong>. El HALTER te ayuda a identificarlo.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.7rem">
+      <div style="font-size:.82rem;padding:.3rem .5rem;background:#fff;border-radius:6px;border:1px solid var(--border)"><strong style="color:var(--danger)">H</strong> — Hambre</div>
+      <div style="font-size:.82rem;padding:.3rem .5rem;background:#fff;border-radius:6px;border:1px solid var(--border)"><strong style="color:var(--warning)">A</strong> — Enojo (Anger)</div>
+      <div style="font-size:.82rem;padding:.3rem .5rem;background:#fff;border-radius:6px;border:1px solid var(--border)"><strong style="color:var(--warning)">L</strong> — Soledad (Lonely)</div>
+      <div style="font-size:.82rem;padding:.3rem .5rem;background:#fff;border-radius:6px;border:1px solid var(--border)"><strong style="color:var(--warning)">T</strong> — Cansancio (Tired)</div>
+      <div style="font-size:.82rem;padding:.3rem .5rem;background:#fff;border-radius:6px;border:1px solid var(--border)"><strong style="color:var(--blue)">E</strong> — Desregulación Emocional</div>
+      <div style="font-size:.82rem;padding:.3rem .5rem;background:#fff;border-radius:6px;border:1px solid var(--blue);color:var(--blue)"><strong>R</strong> — Replantear · Urge Surfing</div>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted)">Reconocer el estado activa tu control ejecutivo. <strong>Toca lo que sientes ahora:</strong></p>
+  </div>
+
   <div class="card">
     <div class="halt-grid">
       <div class="halt-item" id="h-hungry" onclick="toggleHalt('hungry')"><div class="halt-icon">🍽️</div><div class="halt-name">HAMBRE</div><div class="halt-desc">¿Cuándo comiste?</div></div>
@@ -281,22 +297,21 @@
       <div class="halt-item" id="h-lonely" onclick="toggleHalt('lonely')"><div class="halt-icon">😔</div><div class="halt-name">SOLEDAD</div><div class="halt-desc">¿Te sientes solo?</div></div>
       <div class="halt-item" id="h-tired" onclick="toggleHalt('tired')"><div class="halt-icon">😴</div><div class="halt-name">CANSANCIO</div><div class="halt-desc">¿Dormiste bien?</div></div>
       <div class="halt-item" id="h-emotional" onclick="toggleHalt('emotional')"><div class="halt-icon">🌪️</div><div class="halt-name">EMOCIONAL</div><div class="halt-desc">¿Emociones intensas?</div></div>
-      <div class="halt-item" id="h-restless" onclick="toggleHalt('restless')" style="grid-column:1/-1;background:rgba(79,142,247,.05);border-color:var(--blue)"><div class="halt-icon">🌊</div><div class="halt-name" style="color:var(--blue)">REPLANTEAR</div><div class="halt-desc">Retrasar el impulso · Urge Surfing</div></div>
+      <div class="halt-item" id="h-restless" onclick="toggleHalt('restless')" style="grid-column:1/-1;background:rgba(79,142,247,.07);border-color:var(--blue);border-width:2px"><div class="halt-icon">🌊</div><div class="halt-name" style="color:var(--blue)">REPLANTEAR</div><div class="halt-desc">Retrasar el impulso · Toca para Urge Surfing</div></div>
     </div>
     <div class="halt-response" id="resp-hungry"><strong>🍽️ Tienes hambre.</strong> Come algo ahora. El cerebro confunde hambre con deseo de consumir. Come antes de tomar cualquier decisión.</div>
     <div class="halt-response" id="resp-angry"><strong>😠 Estás enojado/a.</strong> El enojo es válido. Escribe lo que sientes, camina, o llama a alguien. No consumas encima del enojo.</div>
     <div class="halt-response" id="resp-lonely"><strong>😔 Te sientes solo/a.</strong> Llama a alguien ahora — no importa el motivo. Solo hacer contacto reduce el riesgo.</div>
     <div class="halt-response" id="resp-tired"><strong>😴 Estás cansado/a.</strong> El agotamiento baja tu capacidad de resistir. Descansa si puedes. No estés solo en este estado.</div>
-    <div class="halt-response" id="resp-emotional"><strong>🌪️ Emociones intensas.</strong> Cuando las emociones desbordan, el cerebro busca alivio rápido. No actúes desde ese estado — espera 20 minutos antes de tomar cualquier decisión importante.</div>
-    <div class="halt-response" id="resp-restless" style="background:var(--blue-bg);border-color:var(--blue);color:var(--blue)">
-      <strong>🌊 Replantear · Retrasar el impulso.</strong> El deseo de consumir es como una ola — sube, llega a su pico y baja solo. No tienes que luchar contra él, solo observarlo pasar.
-      <button onclick="openSurfing()" style="display:block;width:100%;margin-top:.8rem;padding:.7rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">🌊 Iniciar Urge Surfing guiado</button>
+    <div class="halt-response" id="resp-emotional"><strong>🌪️ Desregulación emocional.</strong> Cuando las emociones desbordan, el cerebro busca alivio rápido. No actúes desde ese estado — espera 20 minutos antes de tomar cualquier decisión importante.</div>
+    <div class="halt-response" id="resp-restless" style="background:var(--blue-bg);border-color:var(--blue);color:var(--text)">
+      <strong style="color:var(--blue)">🌊 Replantear — Urge Surfing (Marlatt & Gordon)</strong>
+      <p style="font-size:.85rem;margin:.5rem 0;color:var(--muted)">El deseo de consumir es como una ola: sube, llega a su pico y <strong>baja solo</strong> en 15-30 minutos si no actúas sobre él. No tienes que luchar — solo observarlo pasar.</p>
+      <p style="font-size:.82rem;margin-bottom:.7rem;color:var(--muted)">El ejercicio guiado dura <strong>3 minutos</strong>. Incluye audio de olas, guía de texto sincronizada y registro post-ejercicio.</p>
+      <button onclick="openSurfing()" style="display:block;width:100%;padding:.85rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:var(--display);font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 12px rgba(26,82,118,.3)">
+        🌊 Iniciar Urge Surfing guiado — 3 min
+      </button>
     </div>
-  </div>
-
-  <div class="card">
-    <h3>💡 ¿Por qué funciona el HALTER?</h3>
-    <p style="font-size:.88rem;color:var(--muted)">Cuando el cerebro está bajo estas seis condiciones, su capacidad para resistir el deseo de consumir se reduce significativamente. <strong>H</strong>ambre · <strong>A</strong>nger · <strong>L</strong>oneliness · <strong>T</strong>iredness · <strong>E</strong>motional · <strong>R</strong>eplantear. Reconocerlo activa el control ejecutivo y te da poder de actuar antes de que el deseo sea abrumador.</p>
   </div>
 </section>
 
@@ -310,11 +325,17 @@
       <div style="font-size:.78rem;color:#4a8fa8;margin-top:.2rem">Técnica de Marlatt & Gordon</div>
     </div>
 
-    <!-- Audio de olas -->
-    <audio id="wavesAudio" loop>
-      <source src="https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3" type="audio/mpeg">
+    <!-- Audio de olas — múltiples fuentes de respaldo -->
+    <audio id="wavesAudio" loop preload="auto">
       <source src="https://assets.mixkit.co/sfx/preview/mixkit-sea-waves-loop-1196.mp3" type="audio/mpeg">
+      <source src="https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- Instrucción inicial visible -->
+    <div id="surfIntro" style="text-align:center;padding:.8rem;background:rgba(56,189,248,.1);border-radius:10px;margin-bottom:.8rem;border:1px solid rgba(56,189,248,.2)">
+      <div style="font-size:.85rem;color:#7dd3fc;font-family:var(--display);font-weight:700;margin-bottom:.3rem">¿Cómo funciona?</div>
+      <div style="font-size:.82rem;color:#a0c4d8;line-height:1.5">Toca <strong style="color:#38bdf8">▶ Iniciar</strong> para comenzar el audio de olas y la guía. Puedes elegir video en lugar de animación con el botón <strong style="color:#38bdf8">📺 Video</strong>.</div>
+    </div>
 
     <!-- Video olas YouTube -->
     <div id="waveVideo" style="display:none;border-radius:10px;overflow:hidden;margin-bottom:.8rem">
@@ -800,6 +821,8 @@ function startSurfing() {
   surfRunning = true;
   document.getElementById('surfStartBtn').textContent = '⏸ Pausar';
   document.getElementById('surfPost').style.display = 'none';
+  const intro = document.getElementById('surfIntro');
+  if (intro) intro.style.display = 'none';
   if (!videoVisible) {
     const audio = document.getElementById('wavesAudio');
     if (audio) audio.play().catch(()=>{});
