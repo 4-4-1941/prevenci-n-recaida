@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Prevención">
 <meta name="theme-color" content="#1e1a16">
+<meta name="description" content="Plan personal de prevención de recaída y apoyo en momentos de deseo de consumo.">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Recurso de Prevención de Recaída</title>
@@ -17,16 +18,18 @@
   :root {
     --bg:#f7f4ef; --surface:#fff; --card:#fff; --border:#e2ddd6;
     --text:#1e1a16; --muted:#7a7166;
-    --danger:#c0392b; --warning:#d68910; --safe:#1e8449; --blue:#1a5276;
+    --danger:#c0392b; --warning:#d68910; --safe:#1e8449; --blue:#123f68; --brand:#0d2138; --gold:#b98735;
     --danger-bg:#fdf2f0; --warning-bg:#fef9ec; --safe-bg:#eafaf1; --blue-bg:#eaf2fb;
     --display:'Nunito',sans-serif; --body:'Nunito Sans',sans-serif;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.7;min-height:100vh;padding-bottom:80px;}
+  :focus-visible{outline:3px solid #1a5276;outline-offset:3px;}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important;}}
+  body{background:linear-gradient(180deg,#edf3f6 0,#f7f4ef 260px);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.7;min-height:100vh;padding-bottom:80px;}
 
   /* ── SETUP SCREEN ── */
   #setupScreen{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;}
-  #setupScreen .logo{font-size:3rem;margin-bottom:1rem;}
+  #setupScreen .logo{width:104px;height:104px;object-fit:cover;border-radius:50%;margin-bottom:1rem;box-shadow:0 10px 26px rgba(13,33,56,.22);}
   #setupScreen h1{font-family:var(--display);font-size:1.6rem;font-weight:800;margin-bottom:.5rem;}
   #setupScreen p{color:var(--muted);font-size:.95rem;margin-bottom:1.5rem;max-width:320px;}
   #setupScreen input{width:100%;padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:var(--body);font-size:1rem;background:var(--surface);color:var(--text);margin-bottom:1rem;text-align:center;}
@@ -53,14 +56,17 @@
   .modal-btn{display:block;width:100%;margin-top:1rem;padding:.85rem;background:var(--safe);color:#fff;border:none;border-radius:10px;font-family:var(--display);font-weight:700;font-size:.95rem;cursor:pointer;}
 
   /* ── HEADER ── */
-  header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.2rem 1rem;display:flex;align-items:center;gap:.8rem;}
-  .header-icon{font-size:1.8rem;flex-shrink:0;}
+  header{background:linear-gradient(120deg,#fff 0%,#f4f8fa 100%);border-bottom:1px solid #d5e0e6;padding:1rem;display:flex;align-items:center;gap:.8rem;box-shadow:0 2px 10px rgba(13,33,56,.06);}
+  .header-icon{width:45px;height:45px;object-fit:cover;border-radius:50%;flex-shrink:0;border:2px solid #d9b36c;}
   header h1{font-family:var(--display);font-size:1.1rem;font-weight:800;}
   .header-sub{font-size:.78rem;color:var(--muted);}
   .patient-name{font-family:var(--display);font-weight:700;font-size:.82rem;color:var(--blue);margin-left:auto;text-align:right;flex-shrink:0;}
 
   /* ── BOTTOM NAV ── */
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:50;}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);border-top:1px solid var(--border);display:flex;z-index:50;box-shadow:0 -4px 16px rgba(13,33,56,.08);}
+  button{transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;}
+  button:hover{filter:brightness(.97);}
+  button:active{transform:scale(.98);}
   .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.6rem .3rem;border:none;background:transparent;cursor:pointer;font-family:var(--display);font-size:.62rem;font-weight:700;color:var(--muted);gap:.2rem;transition:color .2s;}
   .nav-btn .nav-icon{font-size:1.3rem;}
   .nav-btn.active{color:var(--blue);}
@@ -77,7 +83,7 @@
   .section-head p{color:var(--muted);font-size:.88rem;margin-top:.3rem;}
 
   /* ── CARD ── */
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:.9rem;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:.9rem;box-shadow:0 4px 14px rgba(13,33,56,.07);}
   .card h3{font-family:var(--display);font-weight:700;font-size:.95rem;margin-bottom:.6rem;}
 
   /* ── BADGE ── */
@@ -194,7 +200,7 @@
 
 <!-- SETUP SCREEN -->
 <div id="setupScreen">
-  <div class="logo">🛡️</div>
+  <img class="logo" src="logo-sip.jpeg" alt="Logo institucional SIP">
   <h1>Recurso de Prevención de Recaída</h1>
   <p style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem">Creado por <strong>Richard Castillejo Ponce</strong></p>
   <p>Antes de comenzar, escribe tu nombre para que tu terapeuta pueda ver tus registros.</p>
@@ -203,10 +209,10 @@
 </div>
 
 <!-- CRISIS MODAL -->
-<div class="overlay" id="crisisOverlay" onclick="closeCrisisOutside(event)">
+<div class="overlay" id="crisisOverlay" onclick="closeCrisisOutside(event)" role="dialog" aria-modal="true" aria-labelledby="crisisTitle">
   <div class="modal">
-    <button class="modal-close" onclick="closeCrisis()">✕</button>
-    <h2>🆘 Modo Crisis — Hazlo ahora</h2>
+    <button class="modal-close" onclick="closeCrisis()" aria-label="Cerrar modo crisis">✕</button>
+    <h2 id="crisisTitle">🆘 Modo Crisis — Hazlo ahora</h2>
     <div class="step-box"><div class="num">PASO 1 — DETENTE</div><p>No hagas nada todavía. Quédate donde estás. Respira.</p></div>
     <div class="step-box"><div class="num">PASO 2 — NOMBRA LO QUE SIENTES</div><p>¿Estás hambriento, enojado, solo o cansado? Eso no es una señal para consumir — es una señal para cuidarte.</p></div>
     <div class="step-box"><div class="num">PASO 3 — LLAMA A ALGUIEN</div><p>Abre <strong>Mi Red</strong> y llama a tu primer contacto ahora.</p></div>
@@ -226,9 +232,9 @@
 </div>
 
 <header>
-  <div class="header-icon">🛡️</div>
+  <img class="header-icon" src="logo-sip.jpeg" alt="SIP">
   <div>
-    <div class="header-sub">R. Castillejo Ponce</div>
+    <div class="header-sub">SIP · Sistema Intelligence Platform</div>
     <h1>Prevención de Recaída</h1>
   </div>
   <div class="patient-name" id="headerName"></div>
@@ -328,21 +334,17 @@
       <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">Urge Surfing · Marlatt & Gordon (1985) · 5 fases · ~3 min</div>
     </div>
 
-    <!-- Link directo YouTube — funciona siempre sin restricciones -->
-    <a href="https://www.youtube.com/watch?v=BHACKCNDMW8" target="_blank"
-      style="display:flex;align-items:center;gap:.8rem;background:#0f172a;border-radius:8px;padding:1rem;margin-bottom:.8rem;text-decoration:none">
-      <span style="font-size:2rem">🌊</span>
-      <div>
-        <div style="font-family:var(--display);font-weight:700;font-size:.88rem;color:#fff">Ver video de olas — con sonido</div>
-        <div style="font-size:.72rem;color:#94a3b8;margin-top:.1rem">Se abre en YouTube · Regresa con el botón atrás</div>
+    <!-- Video local: funciona dentro de la app y también sin conexión -->
+    <div style="background:#0f172a;border-radius:10px;overflow:hidden;margin-bottom:.9rem;border:1px solid #203750">
+      <video id="wavesVideo" loop playsinline preload="metadata" style="width:100%;display:block;max-height:180px;object-fit:cover;background:#0f172a" aria-label="Video relajante de olas">
+        <source src="waves.mp4" type="video/mp4">
+        Tu navegador no puede reproducir el video de olas.
+      </video>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem .7rem;color:#d9e8f2;font-size:.72rem">
+        <span>🌊 Video de olas disponible sin conexión</span>
+        <span>Se reproduce durante el ejercicio</span>
       </div>
-      <span style="margin-left:auto;color:#38bdf8;font-size:1.2rem">▶</span>
-    </a>
-
-    <!-- Audio olas -->
-    <audio id="wavesAudio" loop preload="auto">
-      <source src="https://assets.mixkit.co/sfx/preview/mixkit-sea-waves-loop-1196.mp3" type="audio/mpeg">
-    </audio>
+    </div>
 
     <!-- Progreso -->
     <div style="margin-bottom:1rem">
@@ -376,7 +378,7 @@
     <!-- Controles -->
     <div style="display:flex;gap:.6rem;margin-bottom:.8rem">
       <button id="surfStartBtn" onclick="startSurfing()" style="flex:1;padding:.8rem;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--display);font-weight:700;font-size:.9rem;cursor:pointer">▶ Iniciar protocolo</button>
-      <button onclick="toggleAudio()" id="audioToggle" style="padding:.8rem .9rem;background:var(--bg);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:.85rem;cursor:pointer">🔇</button>
+      <button onclick="toggleAudio()" id="audioToggle" aria-label="Silenciar video" style="padding:.8rem .9rem;background:var(--bg);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:.85rem;cursor:pointer">🔊</button>
     </div>
 
     <!-- Post-ejercicio -->
@@ -745,9 +747,19 @@ function showPanel(id, btn) {
 }
 
 // ── CRISIS ──
-function openCrisis() { document.getElementById('crisisOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function openCrisis() {
+  document.getElementById('crisisOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.querySelector('#crisisOverlay .modal-close').focus();
+}
 function closeCrisis() { document.getElementById('crisisOverlay').classList.remove('open'); document.body.style.overflow=''; }
 function closeCrisisOutside(e) { if(e.target===document.getElementById('crisisOverlay')) closeCrisis(); }
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  if (document.getElementById('crisisOverlay').classList.contains('open')) closeCrisis();
+  if (document.getElementById('surfingOverlay').classList.contains('open')) closeSurfing();
+  if (document.getElementById('emiOverlay').classList.contains('open')) closeEMI();
+});
 
 // ── CHECKLIST ──
 function toggleCheck(el) {
@@ -764,7 +776,7 @@ function toggleHalt(key) {
 }
 
 // ── URGE SURFING ──
-let surfInterval = null, surfSeconds = 180, surfRunning = false, videoVisible = false;
+let surfInterval = null, surfSeconds = 180, surfRunning = false;
 
 const surfScript = [
   { at:0,   title:'Preparación',              text:'Adopta una postura cómoda. Respira profundo tres veces. No es necesario relajarse — solo observar.' },
@@ -788,13 +800,11 @@ function openSurfing() {
   document.getElementById('surfStartBtn').textContent = '▶ Iniciar protocolo';
   updateSurfGuide(0);
   const vid = document.getElementById('wavesVideo');
-  if (vid) { vid.muted = false; vid.play().catch(()=>{ vid.muted = true; vid.play().catch(()=>{}); }); }
+  if (vid) { vid.pause(); vid.currentTime = 0; vid.muted = audioMuted; }
 }
 
 function closeSurfing() {
   clearInterval(surfInterval); surfRunning = false;
-  const audio = document.getElementById('wavesAudio');
-  if (audio) { audio.pause(); audio.currentTime = 0; }
   const vid = document.getElementById('wavesVideo');
   if (vid) { vid.pause(); vid.currentTime = 0; }
   document.getElementById('surfingOverlay').classList.remove('open');
@@ -803,17 +813,6 @@ function closeSurfing() {
 
 function closeSurfingOutside(e) {
   if (e.target === document.getElementById('surfingOverlay')) closeSurfing();
-}
-
-function toggleMedia() {
-  videoVisible = !videoVisible;
-  document.getElementById('waveVideo').style.display = videoVisible ? 'block' : 'none';
-  document.getElementById('waveAnim').style.display = videoVisible ? 'none' : 'block';
-  document.getElementById('mediaToggle').textContent = videoVisible ? '🌊 Animación' : '📺 Video';
-  if (!videoVisible) {
-    const audio = document.getElementById('wavesAudio');
-    if (surfRunning && audio) audio.play().catch(()=>{});
-  }
 }
 
 function updateSurfGuide(elapsed) {
@@ -827,8 +826,8 @@ function startSurfing() {
   if (surfRunning) {
     clearInterval(surfInterval); surfRunning = false;
     document.getElementById('surfStartBtn').textContent = '▶ Reanudar';
-    const audio = document.getElementById('wavesAudio');
-    if (audio) audio.pause();
+    const vid = document.getElementById('wavesVideo');
+    if (vid) vid.pause();
     return;
   }
   surfRunning = true;
@@ -836,8 +835,8 @@ function startSurfing() {
   document.getElementById('surfPost').style.display = 'none';
   const intro = document.getElementById('surfIntro');
   if (intro) intro.style.display = 'none';
-  const audio = document.getElementById('wavesAudio');
-  if (audio) audio.play().catch(()=>{});
+  const vid = document.getElementById('wavesVideo');
+  if (vid) { vid.muted = audioMuted; vid.play().catch(()=>{}); }
   const totalSecs = 180;
   surfInterval = setInterval(() => {
     surfSeconds--;
@@ -848,7 +847,7 @@ function startSurfing() {
     updateSurfGuide(elapsed);
     if (surfSeconds <= 0) {
       clearInterval(surfInterval); surfRunning = false;
-      if (audio) audio.pause();
+      if (vid) vid.pause();
       document.getElementById('surfStartBtn').textContent = '↺ Repetir';
       document.getElementById('surfPost').style.display = 'block';
       surfSeconds = 180;
@@ -861,8 +860,9 @@ function toggleAudio() {
   const vid = document.getElementById('wavesVideo');
   const btn = document.getElementById('audioToggle');
   audioMuted = !audioMuted;
-  if (vid) vid.muted = audioMuted;
-  btn.textContent = audioMuted ? '🔊' : '🔇';
+  if (vid) { vid.muted = audioMuted; if (!audioMuted && surfRunning) vid.play().catch(()=>{}); }
+  btn.textContent = audioMuted ? '🔇' : '🔊';
+  btn.setAttribute('aria-label', audioMuted ? 'Activar sonido del video' : 'Silenciar video');
 }
 
 function surfResult(result) {
@@ -929,16 +929,18 @@ function runCycle() {
       list.innerHTML = '<p style="font-size:.82rem;color:var(--muted);text-align:center;padding:.5rem 0">Aún no has agregado contactos.</p>';
       return;
     }
-    list.innerHTML = contacts.map((c, i) => `
+    list.innerHTML = contacts.map((c, i) => {
+      const phone = String(c.phone || '').replace(/[^0-9+]/g, '');
+      return `
       <div class="contact-card" style="margin-bottom:.5rem">
-        <div class="contact-icon">${c.icon || '👤'}</div>
-        <div><div class="contact-name">${c.name}</div><div class="contact-role">${c.role || 'Apoyo personal'}</div></div>
+        <div class="contact-icon">${escapeHtml(c.icon || '👤')}</div>
+        <div><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-role">${escapeHtml(c.role || 'Apoyo personal')}</div></div>
         <div style="display:flex;flex-direction:column;gap:.3rem;margin-left:auto;flex-shrink:0">
-          <button class="contact-action" onclick="window.location.href='tel:${c.phone}'" ${!c.phone?'disabled':''}>Llamar</button>
+          <button class="contact-action" onclick="window.location.href='tel:${phone}'" ${!phone?'disabled':''}>Llamar</button>
           <button onclick="deleteContact(${i})" style="padding:.25rem .6rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.7rem;cursor:pointer">✕</button>
         </div>
       </div>
-    `).join('');
+    `; }).join('');
   }
 
   function addContact() {
@@ -947,7 +949,7 @@ function runCycle() {
     if (!name) return;
     const phone = prompt('Número (con código de país, ej: 51987654321):');
     const role = prompt('¿Qué rol tiene? (ej: Familiar, Padrino, Amigo)') || 'Apoyo personal';
-    contacts.push({ name, phone: phone||'', role, icon: icons[contacts.length % icons.length] });
+    contacts.push({ name: name.trim().slice(0, 60), phone: (phone||'').replace(/[^0-9+]/g, '').slice(0, 20), role: role.trim().slice(0, 60), icon: icons[contacts.length % icons.length] });
     localStorage.setItem('myContacts', JSON.stringify(contacts));
     renderContacts();
   }
@@ -957,6 +959,12 @@ function runCycle() {
     contacts.splice(i, 1);
     localStorage.setItem('myContacts', JSON.stringify(contacts));
     renderContacts();
+  }
+
+  function escapeHtml(value) {
+    const node = document.createElement('span');
+    node.textContent = String(value || '');
+    return node.innerHTML;
   }
 
 // ── EMA + EMI ──
@@ -1143,7 +1151,7 @@ async function saveEntry() {
       msg.textContent = '✓ Enviado a tu terapeuta correctamente.';
     } catch(e) {
       msg.className = 'sync-msg sync-err';
-      msg.textContent = '⚠ Sin conexión — guardado en tu celular. Se enviará después.';
+      msg.textContent = '⚠ Sin conexión — guardado en tu celular. Intenta enviarlo más tarde.';
     }
   } else {
     msg.className = 'sync-msg sync-err';
@@ -1167,7 +1175,7 @@ function renderLog() {
     const fecha = isNaN(d) ? '' : d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
     return `<div class="log-entry">
       <div class="log-date">${fecha} ${e.zone} ${e.urge!=null?'· Deseo: '+e.urge+'/10':''} ${e.halt?'· '+e.halt:''}</div>
-      ${e.notes?'<div style="margin-top:.2rem">'+e.notes+'</div>':''}
+      ${e.notes?'<div style="margin-top:.2rem">'+escapeHtml(e.notes)+'</div>':''}
     </div>`;
   }).join('');
 }
